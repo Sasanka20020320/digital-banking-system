@@ -1,5 +1,8 @@
 package main;
 
+import exception.InsufficientBalanceException;
+import exception.InvalidAccountException;
+import exception.InvalidAmountException;
 import model.*;
 import service.TransactionService;
 
@@ -19,8 +22,12 @@ public class Main {
             acc1.deposit(2000);
             acc2.withdraw(2000);
             ts.transfer(acc1, acc2, 1500);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (InvalidAmountException e) {
+            System.out.println("Amount Error: " + e.getMessage());
+        } catch (InsufficientBalanceException e) {
+            System.out.println("Balance Error: " + e.getMessage());
+        } catch (InvalidAccountException e) {
+            System.out.println("Account Error: " + e.getMessage());
         }
 
         System.out.println("Account 1 Balance: " + acc1.getBalance());

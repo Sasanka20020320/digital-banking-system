@@ -1,5 +1,8 @@
 package model;
 
+import exception.InsufficientBalanceException;
+import exception.InvalidAmountException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +50,7 @@ public class Account {
     // Deposit method
     public void deposit(double amount) {
         if(amount <= 0) {
-            throw new IllegalArgumentException("Deposit amount must be positive");
+            throw new InvalidAmountException("Deposit amount must be positive");
         }
         balance = balance + amount;
 
@@ -59,11 +62,11 @@ public class Account {
     // Withdraw method
     public void withdraw(double amount) {
         if (amount <= 0) {
-            throw new IllegalArgumentException("Withdraw amount must be positive");
+            throw new InvalidAmountException("Withdraw amount must be positive");
         }
 
         if (balance - amount < minimumBalance) {
-            throw new IllegalArgumentException("Insufficient balance");
+            throw new InsufficientBalanceException("Insufficient balance");
         }
         balance = balance - amount;
 
