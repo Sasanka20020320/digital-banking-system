@@ -46,22 +46,29 @@ public class Account {
 
     // Deposit method
     public void deposit(double amount) {
-        if(amount > 0) {
-            balance = balance + amount;
-
-            // Store the transaction
-            Transaction transaction = new Transaction(amount, TransactionType.DEPOSIT);
-            addTransaction(transaction);
+        if(amount <= 0) {
+            throw new IllegalArgumentException("Deposit amount must be positive");
         }
+        balance = balance + amount;
+
+        // Store the transaction
+        Transaction transaction = new Transaction(amount, TransactionType.DEPOSIT);
+        addTransaction(transaction);
     }
 
     // Withdraw method
     public void withdraw(double amount) {
-        if (amount > 0 && balance - amount >= minimumBalance) {
-            balance = balance - amount;
-
-            Transaction transaction = new Transaction(amount, TransactionType.WITHDRAW);
-            addTransaction(transaction);
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Withdraw amount must be positive");
         }
+
+        if (balance - amount < minimumBalance) {
+            throw new IllegalArgumentException("Insufficient balance");
+        }
+        balance = balance - amount;
+
+        // Store the transaction
+        Transaction transaction = new Transaction(amount, TransactionType.WITHDRAW);
+        addTransaction(transaction);
     }
 }

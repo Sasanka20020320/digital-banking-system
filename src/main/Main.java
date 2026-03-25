@@ -13,14 +13,15 @@ public class Main {
         customer.addAccount(acc1);
         customer.addAccount(acc2);
 
-        acc1.deposit(2000);
-
-        acc2.withdraw(1000);
-
         TransactionService ts = new TransactionService();
 
-        boolean success = ts.transfer(acc1, acc2, 1500);
-        System.out.println("Transfer Status: " + success);
+        try {
+            acc1.deposit(2000);
+            acc2.withdraw(2000);
+            ts.transfer(acc1, acc2, 1500);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
 
         System.out.println("Account 1 Balance: " + acc1.getBalance());
         System.out.println("Account 2 Balance: " + acc2.getBalance());
