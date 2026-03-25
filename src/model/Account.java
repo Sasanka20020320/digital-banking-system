@@ -42,6 +42,8 @@ public class Account {
         this.accountNumber = accountNumber;
     }
 
+    protected void setBalance(double balance) { this.balance = balance; }
+
     // Transaction method
     public void addTransaction(Transaction transaction) {
         transactions.add(transaction);
