@@ -4,6 +4,7 @@ import exception.InsufficientBalanceException;
 import exception.InvalidAccountException;
 import exception.InvalidAmountException;
 import model.*;
+import service.LoanService;
 import service.TransactionService;
 
 public class Main {
@@ -15,10 +16,18 @@ public class Main {
         Account acc3 = new CheckingAccount(103, 1000, -1000);
         Account acc4 = new FixedDepositAccount(104, 10000, 0.2, 12);
 
+        // Create Loan
+        Loan loan1 = new Loan(1, 50000, customer.getUserId());
+
         customer.addAccount(acc1);
         customer.addAccount(acc2);
         customer.addAccount(acc3);
         customer.addAccount(acc4);
+
+        customer.applyLoan(loan1);
+
+        LoanService loanService = new LoanService();
+        loanService.approveLoan(loan1, acc1);
 
         TransactionService ts = new TransactionService();
 
@@ -40,6 +49,8 @@ public class Main {
         System.out.println("Account 2 Balance: " + acc2.getBalance());
         System.out.println("Account 3 Balance: " + acc3.getBalance());
         System.out.println("Account 4 Balance: " + acc4.getBalance());
+
+        System.out.println("Loan Status: " + loan1.getStatus());
 
         System.out.println("\nAccount 1 Transactions: ");
         for (Transaction t : acc1.getTransactions()) {

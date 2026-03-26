@@ -27,7 +27,9 @@ public class Customer extends User {
     }
 
     // Apply Loan
-    public void applyLoan() {}
+    public void applyLoan(Loan loan) {
+        loans.add(loan);
+    }
 
     // Pay Bills
     public void payBill() {}
