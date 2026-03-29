@@ -61,4 +61,10 @@ public class Customer extends User {
     public void addNotification(Notification notification) {
         notifications.add(notification);
     }
+
+    // Notify user
+    public void notifyUser(String message) {
+        Notification notification = new Notification(message);
+        notifications.add(notification);
+    }
 }

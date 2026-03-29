@@ -27,16 +27,16 @@ public class Main {
         customer.applyLoan(loan1);
 
         LoanService loanService = new LoanService();
-        loanService.approveLoan(loan1, acc1);
+        loanService.approveLoan(loan1, acc1, customer);
 
         TransactionService ts = new TransactionService();
 
         try {
-            acc1.deposit(2000);
-            acc2.withdraw(2000);
-            acc3.withdraw(2000);
+            ts.deposit(acc1, 2000, customer);
+            ts.withdraw(acc2, 2000, customer);
+            ts.withdraw(acc3,2000, customer);
 //            acc4.withdraw(1000);
-            ts.transfer(acc1, acc2, 1500);
+            ts.transfer(acc1, acc2, 1500, customer);
         } catch (InvalidAmountException e) {
             System.out.println("Amount Error: " + e.getMessage());
         } catch (InsufficientBalanceException e) {
@@ -75,6 +75,11 @@ public class Main {
         System.out.println("\nCustomer Accounts: ");
         for (Account acc : customer.getAccounts()) {
             System.out.println("Account No: " + acc.getAccountNumber());
+        }
+
+        System.out.println("\nNotifications:");
+        for (Notification n : customer.getNotifications()) {
+            System.out.println(n);
         }
     }
     
