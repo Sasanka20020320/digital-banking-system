@@ -1,10 +1,15 @@
 package model;
 
+import java.io.Serializable;
+
 import java.util.ArrayList;
 import java.util.List;
 
 // Inheritance
-public class Customer extends User {
+public class Customer extends User implements Serializable {
+    // Prevent Serialization errors
+    private static final long serialVersionUID = 1L;
+
     // Declaration of ArrayLists of Account, Loan, Notification objects
     private List<Account> accounts;
     private List<Loan> loans;

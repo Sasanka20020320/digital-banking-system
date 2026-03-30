@@ -1,6 +1,11 @@
 package model;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
+    // Prevent Serialization errors
+    private static final long serialVersionUID = 1L;
+
     private int userId;
     private String name;
     private String email;

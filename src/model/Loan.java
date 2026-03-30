@@ -1,6 +1,11 @@
 package model;
 
-public class Loan {
+import java.io.Serializable;
+
+public class Loan implements Serializable {
+    // Prevent Serialization errors
+    private static final long serialVersionUID = 1L;
+
     private int loanId;
     private double amount;
     private LoanStatus status;

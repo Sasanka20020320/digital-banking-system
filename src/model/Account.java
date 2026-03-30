@@ -5,8 +5,12 @@ import exception.InvalidAmountException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.io.Serializable;
 
-public class Account {
+public class Account implements Serializable {
+    // Prevent Serialization errors
+    private static final long serialVersionUID = 1L;
+
     // Parent attributes
     private int accountNumber;
     private double balance;

@@ -1,9 +1,14 @@
 package model;
 
+import java.io.Serializable;
+
 import exception.InsufficientBalanceException;
 import exception.InvalidAmountException;
 
-public class CheckingAccount extends Account {
+public class CheckingAccount extends Account implements Serializable {
+    // Prevent Serialization errors
+    private static final long serialVersionUID = 1L;
+
     private double overdraftLimit;
 
     public CheckingAccount(int accountNumber, double balance, double overdraftLimit) {

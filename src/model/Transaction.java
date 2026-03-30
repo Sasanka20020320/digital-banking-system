@@ -1,8 +1,12 @@
 package model;
 
 import java.time.Instant;
+import java.io.Serializable;
 
-public class Transaction {
+public class Transaction implements Serializable {
+    // Prevent Serialization errors
+    private static final long serialVersionUID = 1L;
+
     private static int counter = 0;
 
     private int transactionId;

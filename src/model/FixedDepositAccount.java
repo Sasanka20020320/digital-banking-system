@@ -1,6 +1,11 @@
 package model;
 
-public class FixedDepositAccount extends Account {
+import java.io.Serializable;
+
+public class FixedDepositAccount extends Account implements Serializable {
+    // Prevent Serialization errors
+    private static final long serialVersionUID = 1L;
+
     private double interestRate;
     private int durationMonths;
 
