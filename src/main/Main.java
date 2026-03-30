@@ -13,6 +13,7 @@ public class Main {
         Scanner scanner = new Scanner(System.in);
 
         Customer customer = new Customer(1, "Sasanka", "sasanka@email.com", "1234");
+        Staff staff = new Staff(2, "Wishwa", "wishwa@email.com", "1234");
 
         Account acc1 = new SavingsAccount(101, 5000, 0.1);
         Account acc2 = new StudentAccount(102, 3000);
@@ -41,6 +42,7 @@ public class Main {
             System.out.println("5. View Notifications");
             System.out.println("6. Check Balance");
             System.out.println("7. Exit");
+            System.out.println("8. Approve Loan (Staff)");
             System.out.println("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -131,9 +133,7 @@ public class Main {
                     Loan loan = new Loan(2, loanAmount, customer.getUserId());
                     customer.applyLoan(loan);
 
-                    loanService.approveLoan(loan, acc1, customer);
-
-                    System.out.println("Loan applied and processed");
+                    System.out.println("Loan request submitted. Waiting for approval...");
                     break;
 
                 // View Notifications
@@ -174,6 +174,19 @@ public class Main {
                 case 7:
                     running = false;
                     System.out.println("Exiting...");
+                    break;
+
+                // Approve Loan (Staff)
+                case 8:
+                    if (customer.getLoans().isEmpty()) {
+                        System.out.println("No loan requests");
+                        break;
+                    }
+
+                    Loan pendingLoan = customer.getLoans().get(0);
+                    staff.approveLoan(pendingLoan, acc1, customer, loanService);
+
+                    System.out.println("Loan approved by staff");
                     break;
 
                 default:
