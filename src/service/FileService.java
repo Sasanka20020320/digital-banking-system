@@ -1,8 +1,9 @@
 package service;
 
 import model.User;
+import util.FileHandler;
 
-import java.io.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,16 +21,12 @@ public class FileService {
     // File path to store user data
     private static final String FILE_PATH = "bank_data.ser";
 
+    private FileHandler fileHandler = new FileHandler();
+
     // Save all users to file
     public void saveUsers(List<User> users) {
-        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
-            //Write entire user list to file
-            oos.writeObject(users);
-
-            System.out.println("Data saved successfully.");
-        } catch (IOException e) {
-            System.out.println("Error saving data: " + e.getMessage());
-        }
+        fileHandler.writeObject(users, FILE_PATH);
+        System.out.println("Data saved successfully.");
     }
 
     // Load users from file
@@ -41,12 +38,10 @@ public class FileService {
             return new ArrayList<>();
         }
 
-        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_PATH))) {
-            // Read object and cast to List<User>
-            return (List<User>) ois.readObject();
+        Object obj = fileHandler.readObject(FILE_PATH);
 
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error loading data: " + e.getMessage());
+        if (obj != null) {
+            return (List<User>) obj;
         }
 
         return new ArrayList<>();
