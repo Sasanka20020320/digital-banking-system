@@ -4,5 +4,6 @@ package model;
 public enum TransactionType {
     DEPOSIT,
     WITHDRAW,
-    TRANSFER
+    TRANSFER,
+    BILL_PAYMENT
 }

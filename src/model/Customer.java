@@ -14,6 +14,7 @@ public class Customer extends User implements Serializable {
     private List<Account> accounts;
     private List<Loan> loans;
     private List<Notification> notifications;
+    private List<BillPayment> billPayments;
 
     // Customer inherits the attributes from the User
     public Customer(int userId, String name, String email, String password) {
@@ -24,6 +25,7 @@ public class Customer extends User implements Serializable {
         accounts = new ArrayList<>();
         loans = new ArrayList<>();
         notifications = new ArrayList<>();
+        billPayments = new ArrayList<>();
     }
 
     // Add a new account
@@ -37,7 +39,12 @@ public class Customer extends User implements Serializable {
     }
 
     // Pay Bills
-    public void payBill() {}
+    public void payBill(BillPayment billPayment) {
+        if (billPayments == null) {
+            billPayments = new ArrayList<>();
+        }
+        billPayments.add(billPayment);
+    }
 
     // Get accounts
     public List<Account> getAccounts() {
@@ -55,6 +62,14 @@ public class Customer extends User implements Serializable {
     // Get Notifications
     public List<Notification> getNotifications() {
         return new ArrayList<>(notifications);
+    }
+
+    // Get Bills
+    public List<BillPayment> getBillPayments() {
+        if (billPayments == null) {
+            billPayments = new ArrayList<>();
+        }
+        return new ArrayList<>(billPayments);
     }
 
     // Add a Loan

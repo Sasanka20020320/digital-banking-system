@@ -9,11 +9,13 @@ public class BankController {
     private AuthService authService;
     private TransactionService transactionService;
     private LoanService loanService;
+    private BillPaymentService billService;
 
-    public BankController(AuthService authService, TransactionService transactionService, LoanService loanService) {
+    public BankController(AuthService authService, TransactionService transactionService, LoanService loanService, BillPaymentService billService) {
         this.authService = authService;
         this.transactionService = transactionService;
         this.loanService = loanService;
+        this.billService = billService;
     }
 
     // Find an account
@@ -77,7 +79,8 @@ public class BankController {
             System.out.println("4. Apply Loan");
             System.out.println("5. View Notifications");
             System.out.println("6. Check Balance");
-            System.out.println("7. Exit");
+            System.out.println("7. Pay Bill");
+            System.out.println("8. Exit");
             System.out.println("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -166,8 +169,22 @@ public class BankController {
                     }
                     break;
 
-                // Exit
+                // Bill payment
                 case 7:
+                    System.out.println("Enter account number: ");
+                    int billAccNo = scanner.nextInt();
+
+                    System.out.println("Enter bill type (electricity/water/internet): ");
+                    String billType = scanner.next();
+
+                    System.out.println("Enter amount: ");
+                    double billAmount = scanner.nextDouble();
+
+                    payBill(customer, billAccNo, billType, billAmount);
+                    break;
+
+                // Exit
+                case 8:
                     running = false;
                     System.out.println("Exiting...");
                     break;
@@ -261,5 +278,20 @@ public class BankController {
         customer.notifyUser("Loan request submitted: " + amount);
 
         System.out.println("Loan request submitted. Waiting for approval...");
+    }
+
+    // Pay Bills
+    public void payBill(Customer customer, int accNo, String billType, double amount) {
+        Account acc = findAccount(customer, accNo);
+
+        if (acc != null) {
+            try {
+                billService.payBill(acc, billType, amount,customer);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        } else {
+            System.out.println("Account not found");
+        }
     }
 }

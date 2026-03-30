@@ -47,11 +47,10 @@ public class Main {
         TransactionService ts = new TransactionService();
         LoanService loanService = new LoanService();
         AuthService authService = new AuthService();
-
-
+        BillPaymentService billService = new BillPaymentService();
 
         // Controller
-        BankController controller = new BankController(authService, ts, loanService);
+        BankController controller = new BankController(authService, ts, loanService, billService);
         controller.login(users, scanner);
 
         // Save before exiting
