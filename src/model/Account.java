@@ -55,6 +55,7 @@ public class Account {
             throw new InvalidAmountException("Deposit amount must be positive");
         }
         balance = balance + amount;
+        System.out.println("Deposit Successful");
 
         // Store the transaction
         Transaction transaction = new Transaction(amount, TransactionType.DEPOSIT);
@@ -71,6 +72,7 @@ public class Account {
             throw new InsufficientBalanceException("Insufficient balance");
         }
         balance = balance - amount;
+        System.out.println("Withdraw Successful");
 
         // Store the transaction
         Transaction transaction = new Transaction(amount, TransactionType.WITHDRAW);
