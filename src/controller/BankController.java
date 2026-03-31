@@ -80,7 +80,8 @@ public class BankController {
             System.out.println("5. View Notifications");
             System.out.println("6. Check Balance");
             System.out.println("7. Pay Bill");
-            System.out.println("8. Exit");
+            System.out.println("8. View Transactions");
+            System.out.println("9. Exit");
             System.out.println("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -183,8 +184,16 @@ public class BankController {
                     payBill(customer, billAccNo, billType, billAmount);
                     break;
 
-                // Exit
+                // View Transactions
                 case 8:
+                    System.out.println("Enter account number: ");
+                    int transAccNo = scanner.nextInt();
+
+                    viewTransactions(customer, transAccNo, scanner);
+                    break;
+
+                // Exit
+                case 9:
                     running = false;
                     System.out.println("Exiting...");
                     break;
@@ -289,6 +298,116 @@ public class BankController {
                 billService.payBill(acc, billType, amount,customer);
             } catch (Exception e) {
                 System.out.println(e.getMessage());
+            }
+        } else {
+            System.out.println("Account not found");
+        }
+    }
+
+    // View Transactions
+    public void viewTransactions(Customer customer, int accNo, Scanner scanner) {
+        Account acc = findAccount(customer, accNo);
+
+        if (acc != null) {
+            List<Transaction> transactions = acc.getTransactions();
+
+            if (transactions.isEmpty()) {
+                System.out.println("No transactions found.");
+            } else {
+                boolean running = true;
+                boolean found = false;
+
+                while (running) {
+                    System.out.println("\n=== TRANSACTION HISTORY (Account " + accNo + ") ===");
+                    System.out.println("1. All Transactions");
+                    System.out.println("2. Deposit Transactions");
+                    System.out.println("3. Withdraw Transactions");
+                    System.out.println("4. Transfer Transactions");
+                    System.out.println("5. Bill Payment Transactions");
+                    System.out.println("6. Exit");
+                    System.out.println("Choose option: ");
+
+                    int choice = scanner.nextInt();
+
+                    switch (choice) {
+                        // All Transactions
+                        case 1:
+                            for (Transaction t : transactions) {
+                                System.out.println(t);
+                                found = true;
+                            }
+
+                            if (!found) {
+                                System.out.println("No transactions found.");
+                            }
+                            break;
+
+                        // Deposits
+                        case 2:
+                            for (Transaction td : transactions) {
+                                if (td.getType() == TransactionType.DEPOSIT) {
+                                    System.out.println(td);
+                                    found = true;
+                                }
+                            }
+
+                            if (!found) {
+                                System.out.println("No deposit transactions found.");
+                            }
+                            break;
+
+                        // Withdrawals
+                        case 3:
+                            for (Transaction tw : transactions) {
+                                if (tw.getType() == TransactionType.WITHDRAW) {
+                                    System.out.println(tw);
+                                    found = true;
+                                }
+                            }
+
+                            if (!found) {
+                                System.out.println("No withdraw transactions found.");
+                            }
+                            break;
+
+                        // Transfers
+                        case 4:
+                            for (Transaction tt : transactions) {
+                                if (tt.getType() == TransactionType.TRANSFER) {
+                                    System.out.println(tt);
+                                    found = true;
+                                }
+                            }
+
+                            if (!found) {
+                                System.out.println("No transfer transactions found.");
+                            }
+                            break;
+
+                        // Bill Payments
+                        case 5:
+                            for (Transaction tb : transactions) {
+                                if (tb.getType() == TransactionType.BILL_PAYMENT) {
+                                    System.out.println(tb);
+                                    found = true;
+                                }
+                            }
+
+                            if (!found) {
+                                System.out.println("No transactions found.");
+                            }
+                            break;
+
+                        // Exit
+                        case 6:
+                            running = false;
+                            System.out.println("Exiting...");
+                            break;
+
+                        default:
+                            System.out.println("Invalid Choice");
+                    }
+                }
             }
         } else {
             System.out.println("Account not found");
