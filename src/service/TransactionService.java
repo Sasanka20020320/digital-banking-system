@@ -1,9 +1,12 @@
 package service;
 
+import exception.InsufficientBalanceException;
 import exception.InvalidAccountException;
 import exception.InvalidAmountException;
 import model.Account;
 import model.Customer;
+import model.Transaction;
+import model.TransactionType;
 
 public class TransactionService {
     public void transfer(Account from, Account to, double amount, Customer customer) {
@@ -22,11 +25,21 @@ public class TransactionService {
             throw new InvalidAmountException("Transfer amount must be positive");
         }
 
-        // First Step: Withdraw from the sender's account
-        from.withdraw(amount);
+        // Balance validation
+        if (!from.canWithdraw(amount)) {
+            throw new InsufficientBalanceException("Insufficient balance");
+        }
 
-        // Second Step: Deposit into the receiver's account
-        to.deposit(amount);
+        // First Step: decrease balance from the sender's account
+        from.decreaseBalance(amount);
+
+        // Second Step: deposit into the receiver's account
+        to.increaseBalance(amount);
+
+        // Record as transfer transactions
+        Transaction t = new Transaction(amount, TransactionType.TRANSFER, from.getAccountNumber(), to.getAccountNumber());
+        from.addTransaction(t);
+        to.addTransaction(t);
 
         customer.notifyUser("Transfer of " + amount + " completed successfully");
 

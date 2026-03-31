@@ -19,7 +19,7 @@ public class BillPaymentService {
         }
 
         // Withdraw money from account
-        account.withdraw(amount);
+        account.decreaseBalance(amount);
 
         // Create bill record
         BillPayment bill = new BillPayment(billType, amount);

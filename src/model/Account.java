@@ -53,12 +53,26 @@ public class Account implements Serializable {
         transactions.add(transaction);
     }
 
+    // Increase and decrease methods to use in withdrawals, deposits. Also to use in Transfer and Bill Payment transactions to update account balance
+    public void increaseBalance(double amount) {
+        balance += amount;
+    }
+
+    public void decreaseBalance(double amount) {
+        balance -= amount;
+    }
+
+    // Abstraction method to access minimumBalance private attribute
+    public boolean canWithdraw(double amount) {
+        return (balance - amount) >= minimumBalance;
+    }
+
     // Deposit method
     public void deposit(double amount) {
         if(amount <= 0) {
             throw new InvalidAmountException("Deposit amount must be positive");
         }
-        balance = balance + amount;
+        increaseBalance(amount);
         System.out.println("Deposit Successful");
 
         // Store the transaction
@@ -72,10 +86,10 @@ public class Account implements Serializable {
             throw new InvalidAmountException("Withdraw amount must be positive");
         }
 
-        if (balance - amount < minimumBalance) {
+        if (!canWithdraw(amount)) {
             throw new InsufficientBalanceException("Insufficient balance");
         }
-        balance = balance - amount;
+        decreaseBalance(amount);
         System.out.println("Withdraw Successful");
 
         // Store the transaction

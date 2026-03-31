@@ -14,10 +14,30 @@ public class Transaction implements Serializable {
     private TransactionType type;
     private Instant timestamp;
 
+    private Integer fromAccount;
+    private Integer toAccount;
+
+    /*
+    Constructor Overloading
+        - 2-arg constructor --> simple transactions
+        - 4-arg constructor --> transfer only
+     */
+
+    // For normal transactions (deposit, withdraw, bill)
     public Transaction(double amount, TransactionType type) {
+        this.transactionId = ++counter;
+        this.amount = amount;
+        this.type = type;
+        this.timestamp = Instant.now();
+    }
+
+    // For transfer transactions
+    public Transaction(double amount, TransactionType type, Integer fromAccount, Integer toAccount) {
         this.transactionId = ++counter; // Auto-increment ID
         this.amount = amount;
         this.type = type;
+        this.fromAccount = fromAccount;
+        this.toAccount = toAccount;
         this.timestamp = Instant.now();
     }
 
@@ -43,6 +63,8 @@ public class Transaction implements Serializable {
         return "ID: " + transactionId +
                 ", Type: " + type +
                 ", Amount: " + amount +
+                ", From: " + (fromAccount != null ? fromAccount : "-") +
+                ", To: " + (toAccount != null ? toAccount : "-") +
                 ", Time: " + timestamp;
     }
 }
