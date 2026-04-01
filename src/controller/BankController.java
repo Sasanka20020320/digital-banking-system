@@ -29,6 +29,22 @@ public class BankController {
         return null;
     }
 
+    // Find an account of another customer
+    private Account findAccountGlobal(List<User> users, int accNo) {
+        for (User user : users) {
+            if (user instanceof Customer) {
+                Customer customer = (Customer) user;
+
+                for (Account acc : customer.getAccounts()) {
+                    if (acc.getAccountNumber() == accNo) {
+                        return acc;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     // Generate a Loan Id
     private int generateLoanId(Customer customer) {
         return customer.getLoans().size() + 1;
@@ -163,7 +179,7 @@ public class BankController {
         }
 
         if (loggedInUser instanceof Customer) {
-            customerMenu((Customer) loggedInUser, scanner);
+            customerMenu((Customer) loggedInUser, users, scanner);
         } else if (loggedInUser instanceof Staff) {
             staffMenu((Staff) loggedInUser, users, scanner);
         } else if (loggedInUser instanceof Admin) {
@@ -174,7 +190,7 @@ public class BankController {
     }
 
     // Customer menu
-    public void customerMenu(Customer customer, Scanner scanner) {
+    public void customerMenu(Customer customer, List<User> users, Scanner scanner) {
         boolean running = true;
 
         while (running) {
@@ -236,7 +252,7 @@ public class BankController {
                     System.out.println("Amount: ");
                     double amount = scanner.nextDouble();
 
-                    transfer(customer, fromAccNo, toAccNo, amount);
+                    transfer(customer, users, fromAccNo, toAccNo, amount);
                     break;
 
                 // Apply Loan
@@ -360,7 +376,7 @@ public class BankController {
 //                    System.out.println("Loan rejected by staff");
 //                    break;
 
-                    // Collect all loans from all customer
+                // Collect all loans from all customer
                 case 1: // Approve Loan
                 case 2: // Reject Loan
 
@@ -493,11 +509,13 @@ public class BankController {
     }
 
     // Transfer
-    public void transfer(Customer customer, int accFrom, int accTo, double amount) {
+    public void transfer(Customer customer, List<User> users, int accFrom, int accTo, double amount) {
         Account from = findAccount(customer, accFrom);
-        Account to = findAccount(customer, accTo);
+        Account to = findAccountGlobal(users, accTo);
+
         if (from != null && to != null) {
             transactionService.transfer(from, to, amount, customer);
+            System.out.println("Transfer successful!");
         } else {
             System.out.println("Account(s) not found");
         }
