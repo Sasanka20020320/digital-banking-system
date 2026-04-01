@@ -24,9 +24,11 @@ public class Main {
         if (users.isEmpty()) {
             Customer customer = new Customer(1, "Sasanka", "sasanka@email.com", "1234");
             Staff staff = new Staff(2, "Wishwa", "wishwa@email.com", "1234");
+            Admin admin = new Admin(3, "Admin", "admin@email.com", "1234");
 
             users.add(customer);
             users.add(staff);
+            users.add(admin);
 
             // Add accounts
             Account acc1 = new SavingsAccount(101, 5000, 0.1);
@@ -51,7 +53,38 @@ public class Main {
 
         // Controller
         BankController controller = new BankController(authService, ts, loanService, billService);
-        controller.login(users, scanner);
+
+        // Main menu
+        boolean exit = false;
+
+        while(!exit) {
+            System.out.println("=== MAIN MENU ===");
+            System.out.println("1. Register");
+            System.out.println("2. Login");
+            System.out.println("3. Exit");
+            System.out.println("Choose option: ");
+
+            int mainChoice = scanner.nextInt();
+
+            switch (mainChoice) {
+                case 1:
+                    controller.register(users, scanner);
+                    fileService.saveUsers(users);
+                    break;
+                case 2:
+                    try {
+                        controller.login(users, scanner);
+                    } catch (Exception e) {
+                        System.out.println("Error: " + e.getMessage());
+                    }
+                    break;
+                case 3:
+                    exit = true;
+                    break;
+                default:
+                    System.out.println("Invalid choice");
+            }
+        }
 
         // Save before exiting
         fileService.saveUsers(users);

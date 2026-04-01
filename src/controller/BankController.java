@@ -1,5 +1,6 @@
 package controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import model.*;
@@ -33,9 +34,112 @@ public class BankController {
         return customer.getLoans().size() + 1;
     }
 
-    public void login(List<User> users, Scanner scanner) {
+    public void register(List<User> users, Scanner scanner) {
+        System.out.println("=== CUSTOMER REGISTRATION ===");
+        scanner.nextLine();
 
+        String name, email, password;
+
+        System.out.println("Enter Name: ");
+        name = scanner.nextLine();
+
+        while (true) {
+            System.out.println("Enter Email: ");
+            email = scanner.nextLine();
+
+            String finalEmail = email;
+            boolean exists = users.stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(finalEmail));
+
+            if (exists) {
+                System.out.println("Email already exists. Please use a different email.");
+            } else {
+                break;
+            }
+        }
+
+        System.out.println("Enter Password: ");
+        password = scanner.nextLine();
+
+        // Generate new ID
+        int newId = users.stream().mapToInt(User::getUserId).max().orElse(0) + 1;
+
+        Customer newCustomer = new Customer(newId, name, email, password);
+
+        // Create a default account
+        int newAccNo = 100 + newId;
+        System.out.println("Enter initial deposit amount: ");
+        double initBalance = scanner.nextDouble();
+        scanner.nextLine();
+
+        Account acc = new SavingsAccount(newAccNo, initBalance, 0.05);
+        newCustomer.addAccount(acc);
+
+        System.out.println("Savings account created with Account No: " + newAccNo);
+
+        // Ask if user wants to create another account
+        boolean addMore = true;
+
+        while (addMore) {
+            System.out.println("Do you want to create another account? (yes/no): ");
+            String choice = scanner.nextLine().trim().toLowerCase();
+
+            if (choice.equals("yes")) {
+                System.out.println("Select account type: ");
+                System.out.println("1. Savings");
+                System.out.println("2. Checking");
+                System.out.println("3. Student");
+                System.out.println("4. Fixed Deposit");
+
+                int type = scanner.nextInt();
+                scanner.nextLine();
+
+                System.out.println("Enter initial deposit: ");
+                double balance = scanner.nextDouble();
+                scanner.nextLine();
+
+                int accNo = 100 + newCustomer.getAccounts().size() + newId;
+                Account newAcc = null;
+
+                switch (type) {
+                    case 1:
+                        newAcc = new SavingsAccount(accNo, balance, 0.05);
+                        break;
+                    case 2:
+                        System.out.println("Enter overdraft limit: ");
+                        double overdraft = scanner.nextDouble();
+                        scanner.nextLine();
+
+                        newAcc = new CheckingAccount(accNo, balance, overdraft);
+                        break;
+                    case 3:
+                        newAcc = new StudentAccount(accNo, balance);
+                        break;
+                    case 4:
+                        double interestRate = 0.2; // 20%
+
+                        System.out.println("Enter months for deposit: ");
+                        int months = scanner.nextInt();
+                        scanner.nextLine();
+
+                        newAcc = new FixedDepositAccount(accNo, balance, interestRate, months);
+                        break;
+                    default:
+                        System.out.println("Invalid account type");
+                }
+                newCustomer.addAccount(newAcc);
+                System.out.println("Account created with Account No: " + accNo);
+            } else {
+                addMore = false;
+            }
+        }
+
+        users.add(newCustomer);
+        System.out.println("Registration successful! You can now login.");
+    }
+
+    public void login(List<User> users, Scanner scanner) {
         System.out.println("=== Login ===");
+
         System.out.println("Email: ");
         String email = scanner.next();
 
@@ -61,7 +165,9 @@ public class BankController {
         if (loggedInUser instanceof Customer) {
             customerMenu((Customer) loggedInUser, scanner);
         } else if (loggedInUser instanceof Staff) {
-            staffMenu((Staff) loggedInUser, customer, scanner);
+            staffMenu((Staff) loggedInUser, users, scanner);
+        } else if (loggedInUser instanceof Admin) {
+            adminMenu((Admin) loggedInUser, users, scanner);
         }
 
 //        System.out.println("Welcome, " + customer.getName());
@@ -100,6 +206,11 @@ public class BankController {
 
                 // Withdraw
                 case 2:
+                    System.out.println("Your Accounts: ");
+                    for (Account acc : customer.getAccounts()) {
+                        System.out.println("Account No: " + acc.getAccountNumber());
+                    }
+
                     System.out.println("Enter account number: ");
                     int withAccNo = scanner.nextInt();
 
@@ -172,6 +283,11 @@ public class BankController {
 
                 // Bill payment
                 case 7:
+                    System.out.println("Your Accounts: ");
+                    for (Account acc : customer.getAccounts()) {
+                        System.out.println("Account No: " + acc.getAccountNumber());
+                    }
+
                     System.out.println("Enter account number: ");
                     int billAccNo = scanner.nextInt();
 
@@ -205,37 +321,150 @@ public class BankController {
     }
 
     // Staff menu
-    public void staffMenu(Staff staff, Customer customer, Scanner scanner) {
+    public void staffMenu(Staff staff, List<User> users, Scanner scanner) {
         boolean running = true;
 
         while (running) {
             System.out.println("\n=== STAFF MENU ===");
             System.out.println("1. Approve Loan");
-            System.out.println("2. Exit");
+            System.out.println("2. Reject Loan");
+            System.out.println("3. Exit");
             System.out.println("Choose option: ");
 
             int choice = scanner.nextInt();
 
             switch (choice) {
                 // Approve Loan
-                case 1:
-                    if (customer.getLoans().isEmpty()) {
-                        System.out.println("No loan requests");
+//                case 1:
+//                    if (customer.getLoans().isEmpty()) {
+//                        System.out.println("No loan requests");
+//                        break;
+//                    }
+//
+//                    Loan pendingLoan = customer.getLoans().get(0);
+//                    staff.approveLoan(pendingLoan, customer.getAccounts().get(0), customer, loanService);
+//
+//                    System.out.println("Loan approved by staff");
+//                    break;
+
+                // Reject Loan
+//                case 2:
+//                    if (customer.getLoans().isEmpty()) {
+//                        System.out.println("No loan requests");
+//                        break;
+//                    }
+//
+//                    pendingLoan = customer.getLoans().get(0);
+//                    staff.rejectLoan(pendingLoan, loanService);
+//
+//                    System.out.println("Loan rejected by staff");
+//                    break;
+
+                    // Collect all loans from all customer
+                case 1: // Approve Loan
+                case 2: // Reject Loan
+
+                    List<Loan> allLoans = new ArrayList<>();
+                    List<Customer> loanCustomers = new ArrayList<>();
+
+                    // Collect all loans from all customers
+                    for (User user : users) {
+                        if (user instanceof Customer) {
+                            Customer c = (Customer) user;
+
+                            for (Loan loan : c.getLoans()) {
+                                allLoans.add(loan);
+                                loanCustomers.add(c);
+                            }
+                        }
+                    }
+
+                    if (allLoans.isEmpty()) {
+                        System.out.println("No loan requests available");
                         break;
                     }
 
-                    Loan pendingLoan = customer.getLoans().get(0);
-                    staff.approveLoan(pendingLoan, customer.getAccounts().get(0), customer, loanService);
+                    // Display loans
+                    System.out.println("\n=== LOAN LIST ===");
+                    for (int i = 0; i < allLoans.size(); i++) {
+                        Loan loan = allLoans.get(i);
+                        System.out.println((i + 1) + ". Loan ID: " + loan.getLoanId() +
+                                ", Amount: " + loan.getAmount() +
+                                ", Status: " + loan.getStatus() +
+                                ", Customer ID: " + loan.getCustomerId());
+                    }
 
-                    System.out.println("Loan approved by staff");
+                    System.out.println("Select loan number: ");
+                    int index = scanner.nextInt() - 1;
+
+                    if (index < 0 || index >= allLoans.size()) {
+                        System.out.println("Invalid selection");
+                        break;
+                    }
+
+                    Loan selectedLoan = allLoans.get(index);
+                    Customer loanOwner = loanCustomers.get(index);
+
+                    if (selectedLoan.getStatus() != LoanStatus.PENDING) {
+                        System.out.println("Loan already processed");
+                        break;
+                    }
+
+                    // Approve or Reject
+                    if (choice == 1) {
+                        staff.approveLoan(selectedLoan, loanOwner.getAccounts().get(0), loanOwner, loanService);
+                        System.out.println("Loan approved");
+                    } else {
+                        staff.rejectLoan(selectedLoan, loanService);
+                        System.out.println("Loan rejected");
+                    }
+
                     break;
 
                 // Exit
-                case 2:
+                case 3:
                     running = false;
                     System.out.println("Exiting...");
                     break;
 
+                default:
+                    System.out.println("Invalid choice");
+            }
+        }
+    }
+
+    // Admin menu
+    public void adminMenu(Admin admin, List<User> users, Scanner scanner) {
+        boolean running = true;
+
+        while (running) {
+            System.out.println("\n=== ADMIN MENU ===");
+            System.out.println("1. View All Users");
+            System.out.println("2. View User Accounts");
+            System.out.println("3. View All Loans");
+            System.out.println("4. Loan Performance Report");
+            System.out.println("5. Exit");
+            System.out.println("Choose option: ");
+
+            int choice = scanner.nextInt();
+
+            switch (choice) {
+                case 1:
+                    viewAllUsers(users);
+                    break;
+                case 2:
+                    viewAllAccounts(users);
+                    break;
+                case 3:
+                    viewAllLoans(users);
+                    break;
+                case 4:
+                    generateLoanReport(users);
+                    break;
+                case 5:
+                    running = false;
+                    System.out.println("Exiting...");
+                    break;
                 default:
                     System.out.println("Invalid choice");
             }
@@ -344,6 +573,8 @@ public class BankController {
 
                         // Deposits
                         case 2:
+                            found = false;
+
                             for (Transaction td : transactions) {
                                 if (td.getType() == TransactionType.DEPOSIT) {
                                     System.out.println(td);
@@ -358,6 +589,8 @@ public class BankController {
 
                         // Withdrawals
                         case 3:
+                            found = false;
+
                             for (Transaction tw : transactions) {
                                 if (tw.getType() == TransactionType.WITHDRAW) {
                                     System.out.println(tw);
@@ -372,6 +605,7 @@ public class BankController {
 
                         // Transfers
                         case 4:
+                            found = false;
                             for (Transaction tt : transactions) {
                                 if (tt.getType() == TransactionType.TRANSFER) {
                                     System.out.println(tt);
@@ -412,5 +646,90 @@ public class BankController {
         } else {
             System.out.println("Account not found");
         }
+    }
+
+    // View all users
+    private void viewAllUsers(List<User> users) {
+        for(User user : users) {
+            System.out.println(user);
+        }
+    }
+
+    // View all accounts
+    private void viewAllAccounts(List<User> users) {
+        boolean found = false;
+
+        for (User user : users) {
+            if (user instanceof Customer) {
+                Customer customer = (Customer) user;
+
+                for (Account acc : customer.getAccounts()) {
+                    System.out.println("Account No: " + acc.getAccountNumber() +
+                            ", Balance: " + acc.getBalance());
+                    found = true;
+                }
+            }
+        }
+        if (!found) {
+            System.out.println("No accounts found");
+        }
+    }
+
+    // View all loans
+    private void viewAllLoans(List<User> users) {
+        for (User user : users) {
+            if (user instanceof Customer) {
+                Customer customer = (Customer) user;
+
+                for (Loan loan : customer.getLoans()) {
+                    System.out.println("Loan ID: " + loan.getLoanId() +
+                            ", Amount: " + loan.getAmount() +
+                            ", Status: " + loan.getStatus() +
+                            ", Customer ID: " + loan.getCustomerId());
+                }
+            }
+        }
+    }
+
+    // Loan Performance Reports
+    private void generateLoanReport(List<User> users) {
+        int totalLoans = 0;
+        int approved = 0;
+        int rejected = 0;
+        int pending = 0;
+        double totalAmount = 0;
+
+        for (User user : users) {
+            if (user instanceof Customer) {
+                Customer customer = (Customer) user;
+
+                for (Loan loan : customer.getLoans()) {
+                    totalLoans++;
+                    totalAmount += loan.getAmount();
+
+                    switch (loan.getStatus()) {
+                        case APPROVED:
+                            approved++;
+                            break;
+                        case REJECTED:
+                            rejected++;
+                            break;
+                        case PENDING:
+                            pending++;
+                            break;
+                    }
+                }
+            }
+        }
+
+        System.out.println("\n=== LOAN PERFORMANCE REPORT ===");
+        System.out.println("Total Loans: " + totalLoans);
+        System.out.println("Approved: " + approved);
+        System.out.println("Rejected: " + rejected);
+        System.out.println("Pending: " + pending);
+        System.out.println("Total Loan Amount: " + totalAmount);
+
+        double approveRate = totalLoans > 0 ? (approved * 100.0 / totalLoans) : 0;
+        System.out.println("Approval Rate: " + approveRate + "%");
     }
 }
