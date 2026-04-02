@@ -19,6 +19,9 @@ public class Account implements Serializable {
     private double balance;
     protected double minimumBalance = 1000;
 
+    private boolean frozen = false;
+    private boolean closed = false;
+
     // ArrayList to store transactions
     private List<Transaction> transactions;
 
@@ -63,12 +66,28 @@ public class Account implements Serializable {
         return new ArrayList<>(monthlyStatements);
     }
 
+    public boolean isFrozen() {
+        return frozen;
+    }
+
+    public boolean isClosed() {
+        return closed;
+    }
+
     // Setters for attributes
     public void setAccountNumber(int accountNumber) {
         this.accountNumber = accountNumber;
     }
 
     protected void setBalance(double balance) { this.balance = balance; }
+
+    public void setFrozen(boolean frozen) {
+        this.frozen = frozen;
+    }
+
+    public void setClosed(boolean closed) {
+        this.closed = closed;
+    }
 
     // Transaction method
     public void addTransaction(Transaction transaction) {

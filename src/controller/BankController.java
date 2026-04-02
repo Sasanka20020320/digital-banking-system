@@ -490,7 +490,10 @@ public class BankController {
                     break;
                 case 5:
                     updateUserInfo(users, scanner);
+                    break;
                 case 6:
+                    manageAccountStatus(users, scanner);
+                    break;
                 case 7:
                     viewSuspiciousTransactions(users);
                     break;
@@ -508,27 +511,50 @@ public class BankController {
     // Deposit
     public void deposit(Customer customer, int accNo, double amount) {
         Account acc = findAccount(customer, accNo);
-        if (acc != null) {
-            transactionService.deposit(acc, amount, customer);
-        } else {
+
+        if (acc == null) {
             System.out.println("Account not found");
+            return;
         }
+
+        if (acc.isClosed()) {
+            System.out.println("Cannot deposit. Account is closed.");
+            return;
+        }
+
+        if (acc.isFrozen()) {
+            System.out.println("Cannot deposit. Account is frozen.");
+            return;
+        }
+
+        transactionService.deposit(acc, amount, customer);
     }
 
     // Withdraw
     public void withdraw(Customer customer, int accNo, double amount) {
         Account acc = findAccount(customer, accNo);
+
+        if (acc == null) {
+            System.out.println("Account not found");
+            return;
+        }
+
+        if (acc.isClosed()) {
+            System.out.println("Cannot withdraw. Account is closed.");
+            return;
+        }
+
+        if (acc.isFrozen()) {
+            System.out.println("Cannot withdraw. Account is frozen.");
+            return;
+        }
+
         try {
-            if (acc != null) {
-                transactionService.withdraw(acc, amount, customer);
-            } else {
-                System.out.println("Account not found");
-            }
+            transactionService.withdraw(acc, amount, customer);
         } catch (Exception e) {
             customer.notifyUser("Withdrawal failed: " + e.getMessage(), Notification.NotificationType.ALERT);
             System.out.println(e.getMessage());
         }
-
     }
 
     // Transfer
@@ -536,13 +562,24 @@ public class BankController {
         Account from = findAccount(customer, accFrom);
         Account to = findAccountGlobal(users, accTo);
 
-        if (from != null && to != null) {
-            transactionService.transfer(from, to, amount, customer);
-            System.out.println("Transfer successful!");
-        } else {
+        if (from == null || to == null) {
             System.out.println("Account(s) not found");
+            return;
         }
+
+        if (from.isClosed() || to.isClosed()) {
+            System.out.println("Cannot transfer. One or more accounts are closed.");
+            return;
+        }
+
+        if (from.isFrozen() || to.isFrozen()) {
+            System.out.println("Cannot transfer. One or more accounts are frozen.");
+            return;
+        }
+
+        transactionService.transfer(from, to, amount, customer);
     }
+
 
     // Apply Loan
     public void applyLoan(Customer customer, double amount, Scanner scanner) {
@@ -568,14 +605,25 @@ public class BankController {
     public void payBill(Customer customer, int accNo, String billType, double amount) {
         Account acc = findAccount(customer, accNo);
 
-        if (acc != null) {
-            try {
-                billService.payBill(acc, billType, amount,customer);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-            }
-        } else {
+        if (acc == null) {
             System.out.println("Account not found");
+            return;
+        }
+
+        if (acc.isClosed()) {
+            System.out.println("Cannot pay bill. Account is closed.");
+            return;
+        }
+
+        if (acc.isFrozen()) {
+            System.out.println("Cannot pay bill. Account is frozen.");
+            return;
+        }
+
+        try {
+            billService.payBill(acc, billType, amount, customer);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
         }
     }
 
@@ -1000,6 +1048,74 @@ public class BankController {
                 default:
                     System.out.println("Invalid choice.");
             }
+        }
+    }
+
+    // Freeze / Close Account
+    private void manageAccountStatus(List<User> users, Scanner scanner) {
+        System.out.println("=== FREEZE / CLOSE ACCOUNT ===");
+
+        // List all customers
+        List<Customer> customers = users.stream()
+                .filter(u -> u instanceof Customer)
+                .map(u -> (Customer) u)
+                .toList();
+
+        if (customers.isEmpty()) {
+            System.out.println("No customers found.");
+            return;
+        }
+
+        System.out.println("Select a customer: ");
+        for (int i = 0; i < customers.size(); i++) {
+            Customer c = customers.get(i);
+            System.out.println((i + 1) + ". " + c.getName() + " (ID: " + c.getUserId() + ")");
+        }
+
+        int custIndex = scanner.nextInt() - 1;
+        if (custIndex < 0 || custIndex >= customers.size()) {
+            System.out.println("Invalid selection");
+            return;
+        }
+
+        Customer selectedCustomer = customers.get(custIndex);
+
+        if (selectedCustomer.getAccounts().isEmpty()) {
+            System.out.println("Customer has no accounts.");
+            return;
+        }
+
+        // List accounts
+        System.out.println("Select an account: ");
+        for (int i = 0; i < selectedCustomer.getAccounts().size(); i++) {
+            Account acc = selectedCustomer.getAccounts().get(i);
+            System.out.println((i + 1) + ". Account No: " + acc.getAccountNumber() + ", Balance: " + acc.getBalance());
+        }
+
+        int accIndex = scanner.nextInt() - 1;
+        if (accIndex < 0 || accIndex >= selectedCustomer.getAccounts().size()) {
+            System.out.println("Invalid selection");
+            return;
+        }
+
+        Account selectedAccount = selectedCustomer.getAccounts().get(accIndex);
+
+        // Freeze or Close
+        System.out.println("Choose action: 1. Freeze  2. Close");
+        int action = scanner.nextInt();
+
+        switch (action) {
+            case 1 -> {
+                selectedAccount.setFrozen(true);
+                System.out.println("Account " + selectedAccount.getAccountNumber() + " has been frozen.");
+                selectedCustomer.notifyUser("Your account " + selectedAccount.getAccountNumber() + " has been frozen by admin.", Notification.NotificationType.ALERT);
+            }
+            case 2 -> {
+                selectedAccount.setClosed(true);
+                System.out.println("Account " + selectedAccount.getAccountNumber() + " has been closed.");
+                selectedCustomer.notifyUser("Your account " + selectedAccount.getAccountNumber() + " has been closed by admin.", Notification.NotificationType.ALERT);
+            }
+            default -> System.out.println("Invalid action");
         }
     }
 }
