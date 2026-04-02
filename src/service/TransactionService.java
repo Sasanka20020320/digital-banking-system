@@ -7,51 +7,70 @@ import model.*;
 
 public class TransactionService {
     public void transfer(Account from, Account to, double amount, Customer customer) {
-        // Validate sender and receiver accounts
-        if (from == null || to == null) {
-            throw new InvalidAccountException("Invalid account");
+        try {
+            // Validate sender and receiver accounts
+            if (from == null || to == null) {
+                throw new InvalidAccountException("Invalid account");
+            }
+
+            // Prevent from self-transfer
+            if (from == to) {
+                throw new InvalidAccountException("Cannot transfer to same account");
+            }
+
+            // Validate the amount
+            if (amount <= 0) {
+                throw new InvalidAmountException("Transfer amount must be positive");
+            }
+
+            // Balance validation
+            if (!from.canWithdraw(amount)) {
+                throw new InsufficientBalanceException("Insufficient balance");
+            }
+
+            // First Step: decrease balance from the sender's account
+            from.withdraw(amount, TransactionType.TRANSFER);
+
+            // Second Step: deposit into the receiver's account
+            to.increaseBalance(amount);
+
+            checkLowBalance(from, customer);
+
+            // Record as transfer transactions
+            Transaction t = new Transaction(amount, TransactionType.TRANSFER, from.getAccountNumber(), to.getAccountNumber());
+            to.addTransaction(t);
+
+            checkLowBalance(from, customer);
+
+            customer.notifyUser("Transfer of " + amount + " completed successfully", Notification.NotificationType.INFO);
+        } catch (Exception e) {
+            customer.notifyUser("Transfer failed: " + e.getMessage(), Notification.NotificationType.ALERT);
         }
 
-        // Prevent from self-transfer
-        if (from == to) {
-            throw new InvalidAccountException("Cannot transfer to same account");
-        }
-
-        // Validate the amount
-        if (amount <= 0) {
-            throw new InvalidAmountException("Transfer amount must be positive");
-        }
-
-        // Balance validation
-        if (!from.canWithdraw(amount)) {
-            throw new InsufficientBalanceException("Insufficient balance");
-        }
-
-        // First Step: decrease balance from the sender's account
-        from.decreaseBalance(amount);
-
-        // Second Step: deposit into the receiver's account
-        to.increaseBalance(amount);
-
-        // Record as transfer transactions
-        Transaction t = new Transaction(amount, TransactionType.TRANSFER, from.getAccountNumber(), to.getAccountNumber());
-        from.addTransaction(t);
-        to.addTransaction(t);
-
-        customer.notifyUser("Transfer of " + amount + " completed successfully");
 
         System.out.println("Transfer successful");
+    }
+
+    // Low Balance alert
+    private void checkLowBalance(Account account, Customer customer) {
+        if (account.getBalance() < 2000) {
+            customer.notifyUser("Warning: Low balance in account " + account.getAccountNumber(), Notification.NotificationType.WARNING);
+        }
     }
 
     // Notify Customer about Deposits
     public void deposit(Account account, double amount, Customer customer) {
         account.deposit(amount);
-        customer.notifyUser("Deposited " + amount + " to account " + account.getAccountNumber());
+        customer.notifyUser("Deposited " + amount + " to account " + account.getAccountNumber(), Notification.NotificationType.INFO);
+
+        checkLowBalance(account, customer);
     }
 
     // Notify Customer about Withdrawals
     public void withdraw(Account account, double amount, Customer customer) {
         account.withdraw(amount);
-        customer.notifyUser("Withdrawn " + amount + " from account " + account.getAccountNumber());
+        customer.notifyUser("Withdrawn " + amount + " from account " + account.getAccountNumber(), Notification.NotificationType.INFO);
+
+        checkLowBalance(account, customer);
     }
 }

@@ -25,6 +25,7 @@ public class SchedulerService {
         // Daily Loan check
         if (now - lastLoanCheck >= ONE_DAY) {
             checkLoanReminders(users);
+            checkBillReminders(users);
             lastLoanCheck = now;
         }
 
@@ -52,9 +53,24 @@ public class SchedulerService {
         }
     }
 
-    // Loan reminders
+    // Loan reminder
     private void checkLoanReminders(List<User> users) {
         LoanService loanService = new LoanService();
         loanService.checkDueLoans(users);
+    }
+
+    // Bill reminder
+    private void checkBillReminders(List<User> users) {
+        for (User user : users) {
+            if (user instanceof Customer) {
+                Customer c = (Customer) user;
+
+                for (BillPayment bill : c.getBillPayments()) {
+                    if (bill.isDueSoon()) {
+                        c.notifyUser("Bill Payment due soon: " + bill.getBillType(), Notification.NotificationType.WARNING);
+                    }
+                }
+            }
+        }
     }
 }

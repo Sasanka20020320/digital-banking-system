@@ -9,7 +9,7 @@ public class LoanService {
         loan.setStatus(LoanStatus.APPROVED);
         account.deposit(loan.getAmount());
 
-        customer.notifyUser("Loan approved: " + loan.getAmount() + " credited to account");
+        customer.notifyUser("Loan approved: " + loan.getAmount() + " credited to account", Notification.NotificationType.INFO);
     }
 
     public void rejectLoan(Loan loan) {
@@ -47,11 +47,11 @@ public class LoanService {
         // Set next due date
         loan.setNextDueDate(currentTime + (30L * 24 * 60 * 60 * 1000));
 
-        customer.notifyUser("Loan installment paid: " + installment);
+        customer.notifyUser("Loan installment paid: " + installment, Notification.NotificationType.INFO);
 
         if (loan.getRemainingBalance() <= 0) {
             loan.setStatus(LoanStatus.COMPLETED);
-            customer.notifyUser("Loan fully paid!");
+            customer.notifyUser("Loan fully paid!", Notification.NotificationType.INFO);
         }
     }
 
@@ -69,12 +69,12 @@ public class LoanService {
 
                         // 3 days before due
                         if (diff <= (3L * 24 * 60 * 60 * 1000) && diff > 0) {
-                            c.notifyUser("Loan installment due soon!");
+                            c.notifyUser("Loan installment due soon!", Notification.NotificationType.ALERT);
                         }
 
                         //overdue
                         if (now > loan.getNextDueDate()) {
-                            c.notifyUser("Loan payment overdue!");
+                            c.notifyUser("Loan payment overdue!", Notification.NotificationType.WARNING);
                         }
                     }
                 }

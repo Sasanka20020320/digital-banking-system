@@ -80,8 +80,8 @@ public class Account implements Serializable {
         addTransaction(transaction);
     }
 
-    // Withdraw method
-    public void withdraw(double amount) {
+    // Withdraw method for (Bill Payment etc.)
+    public void withdraw(double amount, TransactionType type) {
         if (amount <= 0) {
             throw new InvalidAmountException("Withdraw amount must be positive");
         }
@@ -89,11 +89,21 @@ public class Account implements Serializable {
         if (!canWithdraw(amount)) {
             throw new InsufficientBalanceException("Insufficient balance");
         }
+
         decreaseBalance(amount);
-        System.out.println("Withdraw Successful");
+        System.out.println("Withdraw successful");
+
+        if (balance <= minimumBalance) {
+            System.out.println("Warning: Low Balance!");
+        }
 
         // Store the transaction
-        Transaction transaction = new Transaction(amount, TransactionType.WITHDRAW);
+        Transaction transaction = new Transaction(amount, type);
         addTransaction(transaction);
+    }
+
+    // Normal Withdraw
+    public void withdraw(double amount) {
+        withdraw(amount, TransactionType.WITHDRAW);
     }
 }

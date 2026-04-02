@@ -7,8 +7,6 @@ public class Transaction implements Serializable {
     // Prevent Serialization errors
     private static final long serialVersionUID = 1L;
 
-    private static int counter = 0;
-
     private int transactionId;
     private double amount;
     private TransactionType type;
@@ -25,7 +23,7 @@ public class Transaction implements Serializable {
 
     // For normal transactions (deposit, withdraw, bill)
     public Transaction(double amount, TransactionType type) {
-        this.transactionId = ++counter;
+        this.transactionId = generateId();
         this.amount = amount;
         this.type = type;
         this.timestamp = Instant.now();
@@ -33,12 +31,17 @@ public class Transaction implements Serializable {
 
     // For transfer transactions
     public Transaction(double amount, TransactionType type, Integer fromAccount, Integer toAccount) {
-        this.transactionId = ++counter; // Auto-increment ID
+        this.transactionId = generateId(); // Auto-increment ID
         this.amount = amount;
         this.type = type;
         this.fromAccount = fromAccount;
         this.toAccount = toAccount;
         this.timestamp = Instant.now();
+    }
+
+    // Generate Transaction ID
+    private int generateId() {
+        return (int) (System.currentTimeMillis() % Integer.MAX_VALUE);
     }
 
     // Getters for private attributes
@@ -60,11 +63,17 @@ public class Transaction implements Serializable {
 
     @Override
     public String toString() {
-        return "ID: " + transactionId +
+        String base = "ID: " + transactionId +
                 ", Type: " + type +
-                ", Amount: " + amount +
-                ", From: " + (fromAccount != null ? fromAccount : "-") +
-                ", To: " + (toAccount != null ? toAccount : "-") +
-                ", Time: " + timestamp;
+                ", Amount: " + amount;
+
+        if (type == TransactionType.TRANSFER) {
+            base += ", From: " + fromAccount +
+                    ", To: " + toAccount;
+        }
+
+        base += ", Time: " + timestamp;
+
+        return base;
     }
 }

@@ -83,8 +83,8 @@ public class Customer extends User implements Serializable {
     }
 
     // Notify user
-    public void notifyUser(String message) {
-        Notification notification = new Notification(message);
+    public void notifyUser(String message, Notification.NotificationType type) {
+        Notification notification = new Notification(message, type);
         notifications.add(notification);
     }
 }

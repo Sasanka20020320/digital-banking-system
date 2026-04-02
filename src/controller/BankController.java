@@ -462,11 +462,17 @@ public class BankController {
     // Withdraw
     public void withdraw(Customer customer, int accNo, double amount) {
         Account acc = findAccount(customer, accNo);
-        if (acc != null) {
-            transactionService.withdraw(acc, amount, customer);
-        } else {
-            System.out.println("Account not found");
+        try {
+            if (acc != null) {
+                transactionService.withdraw(acc, amount, customer);
+            } else {
+                System.out.println("Account not found");
+            }
+        } catch (Exception e) {
+            customer.notifyUser("Withdrawal failed: " + e.getMessage(), Notification.NotificationType.ALERT);
+            System.out.println(e.getMessage());
         }
+
     }
 
     // Transfer
@@ -497,7 +503,7 @@ public class BankController {
         Loan loan = new Loan(generateLoanId(customer), amount, customer.getUserId(), rate, months);
         customer.applyLoan(loan);
 
-        customer.notifyUser("Loan request submitted: " + amount);
+        customer.notifyUser("Loan request submitted: " + amount, Notification.NotificationType.INFO);
 
         System.out.println("Loan request submitted. Waiting for approval...");
     }
@@ -561,7 +567,7 @@ public class BankController {
                 return;
         }
         customer.addAccount(newAcc);
-        customer.notifyUser("New account created: " + accNo);
+        customer.notifyUser("New account created: " + accNo, Notification.NotificationType.INFO);
         System.out.println("Account created successfully! Account No: " + accNo);
     }
 

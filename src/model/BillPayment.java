@@ -19,11 +19,16 @@ public class BillPayment implements Serializable {
     private double amount;
     private Instant timestamp;
 
+    private long dueDate;
+
     public BillPayment(String billType, double amount) {
         this.billId = ++counter;
         this.billType = billType;
         this.amount = amount;
         this.timestamp = Instant.now();
+
+        // due in 7 days
+        this.dueDate = System.currentTimeMillis() + (7L * 24 * 60 * 60 * 1000);
     }
 
     // Getters
@@ -41,6 +46,14 @@ public class BillPayment implements Serializable {
 
     public Instant getTimestamp() {
         return timestamp;
+    }
+
+    public boolean isDueSoon() {
+        long now = System.currentTimeMillis();
+        long diff = dueDate - now;
+
+        // 2 days
+        return diff <= (2L * 24 * 60 * 60 * 1000) && diff > 0;
     }
 
     @Override

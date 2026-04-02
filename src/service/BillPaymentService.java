@@ -18,21 +18,26 @@ public class BillPaymentService {
             throw new InvalidAmountException("Bill amount must be positive");
         }
 
-        // Withdraw money from account
-        account.decreaseBalance(amount);
+        try {
+            // Withdraw money from account
+            account.withdraw(amount, TransactionType.BILL_PAYMENT);
 
-        // Create bill record
-        BillPayment bill = new BillPayment(billType, amount);
+            // Create bill record
+            BillPayment bill = new BillPayment(billType, amount);
 
-        // Store bill in customer
-        customer.payBill(bill);
+            // Store bill in customer
+            customer.payBill(bill);
 
-        // Store as a transaction
-        account.addTransaction(new Transaction(amount, TransactionType.BILL_PAYMENT));
+            // Store as a transaction
+            account.addTransaction(new Transaction(amount, TransactionType.BILL_PAYMENT));
 
-        // Notify user
-        customer.notifyUser("Bill paid: " + billType + " amount " + amount);
+            // Notify user
+            customer.notifyUser("Bill paid: " + billType + " amount " + amount, Notification.NotificationType.INFO);
 
-        System.out.println("Bill payment successful");
+            System.out.println("Bill payment successful");
+        } catch (Exception e) {
+            customer.notifyUser("Bill payment failed: " + e.getMessage(), Notification.NotificationType.ALERT);
+            throw e;
+        }
     }
 }

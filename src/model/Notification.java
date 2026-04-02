@@ -7,15 +7,23 @@ public class Notification implements Serializable {
     // Prevent Serialization errors
     private static final long serialVersionUID = 1L;
 
+    public enum NotificationType {
+        INFO,
+        WARNING,
+        ALERT
+    }
+
     private static int counter = 0;
 
     private int notificationId;
     private String message;
     private Instant timestamp;
+    private NotificationType type;
 
-    public Notification(String message) {
+    public Notification(String message, NotificationType type) {
         this.notificationId = ++counter;
         this.message = message;
+        this.type = type;
         this.timestamp = Instant.now();
     }
 
@@ -30,6 +38,6 @@ public class Notification implements Serializable {
 
     @Override
     public String toString() {
-        return "[" + timestamp + "] " + message;
+        return "[" + timestamp + "] [" + type + "]" + message;
     }
 }

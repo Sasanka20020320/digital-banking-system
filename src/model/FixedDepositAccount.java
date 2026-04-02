@@ -36,10 +36,13 @@ public class FixedDepositAccount extends Account implements Serializable {
     }
 
     // Add interest if matured
+    private boolean interestApplied = false;
+
     public void applyMaturityInterest() {
-        if (isMatured()) {
+        if (isMatured() && !interestApplied) {
             double interest = getBalance() * interestRate;
             deposit(interest);
+            interestApplied = true;
             System.out.println("FD matured. Interest added.");
         }
     }
