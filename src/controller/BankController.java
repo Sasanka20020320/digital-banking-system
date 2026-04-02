@@ -12,6 +12,8 @@ public class BankController {
     private LoanService loanService;
     private BillPaymentService billService;
 
+    private FraudDetectionService fraudService = new FraudDetectionService();
+
     public BankController(AuthService authService, TransactionService transactionService, LoanService loanService, BillPaymentService billService) {
         this.authService = authService;
         this.transactionService = transactionService;
@@ -169,15 +171,15 @@ public class BankController {
             return;
         }
 
-//        Customer customer = null;
-//
-//        for (User user : users) {
-//            if (user instanceof Customer) {
-//                customer = (Customer) user;
-//                break;
-//            }
-//        }
-        Customer customer = (Customer) loggedInUser;
+        Customer customer = null;
+
+        for (User user : users) {
+            if (user instanceof Customer) {
+                customer = (Customer) user;
+                break;
+            }
+        }
+//        Customer customer = (Customer) loggedInUser;
 
         if (loggedInUser instanceof Customer) {
             customerMenu((Customer) loggedInUser, users, scanner);
@@ -439,8 +441,7 @@ public class BankController {
 
                 // View Suspicious Transactions
                 case 3:
-                    FraudDetectionService fraudService = new FraudDetectionService();
-                    fraudService.detectSuspiciousActivities(users);
+                    viewSuspiciousTransactions(users);
                     break;
 
                 // Exit
@@ -465,7 +466,11 @@ public class BankController {
             System.out.println("2. View User Accounts");
             System.out.println("3. View All Loans");
             System.out.println("4. Loan Performance Report");
-            System.out.println("5. Exit");
+            System.out.println("5. Update User Info");
+            System.out.println("6. Freeze / close Account");
+            System.out.println("7. View Suspicious Transactions");
+            System.out.println("8. Export Compliance Report");
+            System.out.println("9. Exit");
             System.out.println("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -484,6 +489,12 @@ public class BankController {
                     generateLoanReport(users);
                     break;
                 case 5:
+                    updateUserInfo(users, scanner);
+                case 6:
+                case 7:
+                    viewSuspiciousTransactions(users);
+                    break;
+                case 9:
                     running = false;
                     System.out.println("Exiting...");
                     break;
@@ -883,5 +894,112 @@ public class BankController {
 
         double approveRate = totalLoans > 0 ? (approved * 100.0 / totalLoans) : 0;
         System.out.println("Approval Rate: " + approveRate + "%");
+    }
+
+    // View suspicious transactions
+    private void viewSuspiciousTransactions(List<User> users) {
+        System.out.println("\n=== SUSPICIOUS TRANSACTIONS REPORT ===");
+        boolean foundAny = false;
+
+        for (User user : users) {
+            if (user instanceof Customer) {
+                Customer c = (Customer) user;
+
+                for (Account acc : c.getAccounts()) {
+                    for (Transaction t : acc.getTransactions()) {
+                        if (t.isSuspicious()) {
+                            foundAny = true;
+                            System.out.println("Customer Name: " + c.getName());
+                            System.out.println("AccountNo: " + acc.getAccountNumber());
+                            System.out.println("Transaction: " + t);
+                            System.out.println("--------------------------------------");
+                        }
+                    }
+                }
+            }
+        }
+        if (!foundAny) {
+            System.out.println("No suspicious transactions found at this time");
+        }
+    }
+
+    // Update user info
+    private void updateUserInfo(List<User> users, Scanner scanner) {
+        System.out.println("\n=== UPDATE USER INFO ===");
+
+        // Display all users with IDs
+        for (User user : users) {
+            System.out.println("User ID: " + user.getUserId() + " | Name: " + user.getName() + " | Email: " + user.getEmail());
+        }
+
+        System.out.println("Enter the User Id to update: ");
+        int userId = scanner.nextInt();
+        scanner.nextLine();
+
+        User selectedUser = null;
+        for (User user : users) {
+            if (user.getUserId() == userId) {
+                selectedUser = user;
+                break;
+            }
+        }
+
+        // Make a final reference for lambda
+        final User userToUpdate = selectedUser;
+
+        if (selectedUser == null) {
+            System.out.println("User not found.");
+            return;
+        }
+
+        System.out.println("Selected User: " + selectedUser.getName() + " | Email: " + selectedUser.getEmail());
+
+        // Update menu
+        boolean updating = true;
+        while (updating) {
+            System.out.println("\nWhat do you want to update?");
+            System.out.println("1. Name");
+            System.out.println("2. Email");
+            System.out.println("3. Password");
+            System.out.println("4. Exit");
+            System.out.println("Choose option: ");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (choice) {
+                case 1:
+                    System.out.println("Enter new name: ");
+                    String newName = scanner.nextLine();
+                    selectedUser.setName(newName);
+                    System.out.println("Name updated successfully.");
+                    break;
+                case 2:
+                    System.out.println("Enter new email: ");
+                    String newEmail = scanner.nextLine();
+
+                    boolean exists = users.stream()
+                            .anyMatch(u -> u.getEmail().equalsIgnoreCase(newEmail) && u.getUserId() != userToUpdate.getUserId());
+
+                    if (exists) {
+                        System.out.println("Email already in use. Try a different one.");
+                    } else {
+                        selectedUser.setEmail(newEmail);
+                        System.out.println("Email updated successfully.");
+                    }
+                    break;
+                case 3:
+                    System.out.println("Enter new password: ");
+                    String newPassword = scanner.nextLine();
+                    selectedUser.setPassword(newPassword);
+                    System.out.println("Password updated successfully.");
+                    break;
+                case 4:
+                    updating = false;
+                    break;
+                default:
+                    System.out.println("Invalid choice.");
+            }
+        }
     }
 }
