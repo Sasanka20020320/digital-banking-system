@@ -1,0 +1,60 @@
+package service;
+
+import model.*;
+
+import java.util.List;
+
+public class SchedulerService {
+    private long lastInterestApplied = 0;
+    private long lastLoanCheck = 0;
+
+    public static final long ONE_DAY = 24L * 60 * 60 * 1000;
+    public static final long ONE_MONTH = 30L * 24 * 60 * 60 * 1000;
+
+    // Run scheduled tasks
+    public void run(List<User> users) {
+        long now = System.currentTimeMillis();
+
+        // Monthly Interest
+        if (now - lastInterestApplied >= ONE_MONTH) {
+            applyMonthlyInterest(users);
+            lastInterestApplied = now;
+            System.out.println("Monthly interest applied.");
+        }
+
+        // Daily Loan check
+        if (now - lastLoanCheck >= ONE_DAY) {
+            checkLoanReminders(users);
+            lastLoanCheck = now;
+        }
+
+    }
+
+    // Apply interest to savings
+    public void applyMonthlyInterest(List<User> users) {
+        for (User user : users) {
+            if (user instanceof Customer) {
+                Customer c = (Customer) user;
+
+                for (Account acc : c.getAccounts()) {
+                    if (acc instanceof SavingsAccount) {
+                        ((SavingsAccount) acc). addInterest();
+                    }
+
+                    if (acc instanceof FixedDepositAccount) {
+                        FixedDepositAccount fd = (FixedDepositAccount) acc;
+                        if (fd.isMatured()) {
+                            fd.applyMaturityInterest();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Loan reminders
+    private void checkLoanReminders(List<User> users) {
+        LoanService loanService = new LoanService();
+        loanService.checkDueLoans(users);
+    }
+}

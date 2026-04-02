@@ -3,5 +3,6 @@ package model;
 public enum LoanStatus {
     PENDING,
     APPROVED,
-    REJECTED
+    REJECTED,
+    COMPLETED
 }

@@ -46,6 +46,7 @@ public class Main {
         LoanService loanService = new LoanService();
         AuthService authService = new AuthService();
         BillPaymentService billService = new BillPaymentService();
+        SchedulerService schedular = new SchedulerService();
 
         // Controller
         BankController controller = new BankController(authService, ts, loanService, billService);
@@ -54,6 +55,8 @@ public class Main {
         boolean exit = false;
 
         while(!exit) {
+            schedular.run(users);
+
             System.out.println("=== MAIN MENU ===");
             System.out.println("1. Register");
             System.out.println("2. Login");

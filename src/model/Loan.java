@@ -11,11 +11,26 @@ public class Loan implements Serializable {
     private LoanStatus status;
     private int customerId;
 
-    public Loan(int loanId, double amount, int customerId) {
+    private double interestRate;
+    private int durationMonths;
+    private double remainingBalance;
+    private double monthlyInstallment;
+    private int monthsPaid;
+    private long nextDueDate;
+
+    public Loan(int loanId, double amount, int customerId, double interestRate, int durationMonths) {
         this.loanId = loanId;
         this.amount = amount;
         this.status = LoanStatus.PENDING;
         this.customerId = customerId;
+
+        this.interestRate = interestRate;
+        this.durationMonths = durationMonths;
+        this.remainingBalance = amount;
+
+        calculateEMI();
+
+        this.nextDueDate = System.currentTimeMillis() + (30L * 24 * 60 * 60 * 1000);
     }
 
     // Getters
@@ -35,6 +50,14 @@ public class Loan implements Serializable {
         return customerId;
     }
 
+    public double getRemainingBalance() { return remainingBalance; }
+
+    public double getMonthlyInstallment() { return monthlyInstallment; }
+
+    public int getMonthsPaid() { return monthsPaid; }
+
+    public long getNextDueDate() { return nextDueDate; }
+
     // Setters
     public void setLoanId(int loanId) {
         this.loanId = loanId;
@@ -50,5 +73,21 @@ public class Loan implements Serializable {
 
     public void setCustomerId(int customerId) {
         this.customerId = customerId;
+    }
+
+    public void setRemainingBalance(double remainingBalance) { this.remainingBalance = remainingBalance; }
+
+    public void setMonthsPaid(int monthsPaid) { this.monthsPaid = monthsPaid; }
+
+    public void setNextDueDate(long nextDueDate) { this.nextDueDate = nextDueDate; }
+
+    // EMI calculations
+    private void calculateEMI() {
+        double monthlyRate = interestRate / 12;
+        int n = durationMonths;
+
+        monthlyInstallment =
+                (amount * monthlyRate * Math.pow(1 + monthlyRate, n)) /
+                        (Math.pow(1 + monthlyRate, n) - 1);
     }
 }

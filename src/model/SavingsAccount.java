@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class SavingsAccount extends Account implements Serializable {
     // Prevent Serialization errors

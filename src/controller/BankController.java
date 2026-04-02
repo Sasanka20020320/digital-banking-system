@@ -179,7 +179,8 @@ public class BankController {
             System.out.println("7. Pay Bill");
             System.out.println("8. View Transactions");
             System.out.println("9. Open New Account");
-            System.out.println("10. Exit");
+            System.out.println("10. Pay Loan Installment");
+            System.out.println("11. Exit");
             System.out.println("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -305,8 +306,13 @@ public class BankController {
                     openNewAccount(customer, users, scanner);
                     break;
 
-                // Exit
+                // Pay Loan Installment
                 case 10:
+                    payLoanInstallment(customer, scanner);
+                    break;
+
+                // Exit
+                case 11:
                     running = false;
                     System.out.println("Exiting...");
                     break;
@@ -482,8 +488,13 @@ public class BankController {
             System.out.println("Invalid loan amount");
             return;
         }
+        double rate = 0.12;
+        System.out.println("Interest Rate: 12%");
 
-        Loan loan = new Loan(generateLoanId(customer), amount, customer.getUserId());
+        System.out.println("Enter duration (months): ");
+        int months = new Scanner(System.in).nextInt();
+
+        Loan loan = new Loan(generateLoanId(customer), amount, customer.getUserId(), rate, months);
         customer.applyLoan(loan);
 
         customer.notifyUser("Loan request submitted: " + amount);
@@ -552,6 +563,51 @@ public class BankController {
         customer.addAccount(newAcc);
         customer.notifyUser("New account created: " + accNo);
         System.out.println("Account created successfully! Account No: " + accNo);
+    }
+
+    // Pay Loan Installment
+    public void payLoanInstallment(Customer customer, Scanner scanner) {
+        List<Loan> loans = customer.getLoans();
+
+        if (loans.isEmpty()) {
+            System.out.println("No loans found.");
+            return;
+        }
+
+        // Display Loans
+        System.out.println("Your Loans: ");
+        for (int i = 0; i < loans.size(); i++) {
+            Loan l = loans.get(i);
+            System.out.println((i + 1) + ". Loan ID: " + l.getLoanId() +
+                    " | Remaining: " + l.getRemainingBalance() +
+                    " | Status: " + l.getStatus());
+        }
+
+        // Select a loan
+        System.out.println("Select loan: ");
+        int index = scanner.nextInt() - 1;
+
+        if (index < 0 || index >= loans.size()) {
+            System.out.println("Invalid selection");
+            return;
+        }
+
+        Loan loan = loans.get(index);
+
+        System.out.println("Select account to pay from: ");
+        for (Account acc : customer.getAccounts()) {
+            System.out.println("Account No: " + acc.getAccountNumber());
+        }
+
+        int accNo = scanner.nextInt();
+        Account acc = findAccount(customer, accNo);
+
+        if (acc == null) {
+            System.out.println("Invalid account");
+            return;
+        }
+
+        loanService.payInstallment(loan, acc, customer);
     }
 
     // View Transactions
