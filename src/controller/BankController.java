@@ -68,6 +68,31 @@ public class BankController {
         return maxAccNo + 1;
     }
 
+    // Generate Monthly Statement
+    public void generateMonthlyStatement(Customer customer, Scanner scanner) {
+        System.out.println("Select account: ");
+        for (Account acc : customer.getAccounts()) {
+            System.out.println("Account No: " + acc.getAccountNumber());
+        }
+        int accNo = scanner.nextInt();
+        Account account = findAccount(customer, accNo);
+
+        if (account == null) {
+            System.out.println("Account not found");
+            return;
+        }
+
+        System.out.println("Enter month (1-12): ");
+        int month = scanner.nextInt();
+        System.out.println("Enter year (YYYY): ");
+        int year = scanner.nextInt();
+
+        String statement = account.generateMonthlyStatement(month, year);
+        System.out.println(statement);
+
+        customer.notifyUser("Monthly statement generated for account " + accNo, Notification.NotificationType.INFO);
+    }
+
     public void register(List<User> users, Scanner scanner) {
         System.out.println("=== CUSTOMER REGISTRATION ===");
         scanner.nextLine();
@@ -144,14 +169,15 @@ public class BankController {
             return;
         }
 
-        Customer customer = null;
-
-        for (User user : users) {
-            if (user instanceof Customer) {
-                customer = (Customer) user;
-                break;
-            }
-        }
+//        Customer customer = null;
+//
+//        for (User user : users) {
+//            if (user instanceof Customer) {
+//                customer = (Customer) user;
+//                break;
+//            }
+//        }
+        Customer customer = (Customer) loggedInUser;
 
         if (loggedInUser instanceof Customer) {
             customerMenu((Customer) loggedInUser, users, scanner);
@@ -180,7 +206,9 @@ public class BankController {
             System.out.println("8. View Transactions");
             System.out.println("9. Open New Account");
             System.out.println("10. Pay Loan Installment");
-            System.out.println("11. Exit");
+            System.out.println("11. Generate Monthly Statement");
+            System.out.println("12. View Monthly Statements");
+            System.out.println("13. Exit");
             System.out.println("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -237,7 +265,7 @@ public class BankController {
                     System.out.println("Enter loan amount: ");
                     double loanAmount = scanner.nextDouble();
 
-                    applyLoan(customer, loanAmount);
+                    applyLoan(customer, loanAmount, scanner);
                     break;
 
                 // View Notifications
@@ -311,8 +339,18 @@ public class BankController {
                     payLoanInstallment(customer, scanner);
                     break;
 
-                // Exit
+                // Generate Monthly Statements
                 case 11:
+                    generateMonthlyStatement(customer, scanner);
+                    break;
+
+                // View Monthly Statements
+                case 12:
+                    viewMonthlyStatements(customer, scanner);
+                    break;
+
+                // Exit
+                case 13:
                     running = false;
                     System.out.println("Exiting...");
                     break;
@@ -489,7 +527,7 @@ public class BankController {
     }
 
     // Apply Loan
-    public void applyLoan(Customer customer, double amount) {
+    public void applyLoan(Customer customer, double amount, Scanner scanner) {
         if (amount <= 0) {
             System.out.println("Invalid loan amount");
             return;
@@ -498,7 +536,7 @@ public class BankController {
         System.out.println("Interest Rate: 12%");
 
         System.out.println("Enter duration (months): ");
-        int months = new Scanner(System.in).nextInt();
+        int months = scanner.nextInt();
 
         Loan loan = new Loan(generateLoanId(customer), amount, customer.getUserId(), rate, months);
         customer.applyLoan(loan);
@@ -728,6 +766,30 @@ public class BankController {
             }
         } else {
             System.out.println("Account not found");
+        }
+    }
+
+    // viewMonthlyStatements
+    public void viewMonthlyStatements(Customer customer, Scanner scanner) {
+        System.out.println("Enter account number: ");
+        int accNo = scanner.nextInt();
+
+        Account acc = findAccount(customer, accNo);
+
+        if (acc == null) {
+            System.out.println("Account not found");
+            return;
+        }
+
+        List<String> statements = acc.getMonthlyStatements();
+
+        if (statements.isEmpty()) {
+            System.out.println("No statements available");
+            return;
+        }
+
+        for (String s : statements) {
+            System.out.println(s);
         }
     }
 

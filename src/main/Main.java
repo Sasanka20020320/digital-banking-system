@@ -54,8 +54,9 @@ public class Main {
         // Main menu
         boolean exit = false;
 
+        schedular.run(users);
+
         while(!exit) {
-            schedular.run(users);
 
             System.out.println("=== MAIN MENU ===");
             System.out.println("1. Register");

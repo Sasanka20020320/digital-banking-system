@@ -34,8 +34,6 @@ public class TransactionService {
             // Second Step: deposit into the receiver's account
             to.increaseBalance(amount);
 
-            checkLowBalance(from, customer);
-
             // Record as transfer transactions
             Transaction t = new Transaction(amount, TransactionType.TRANSFER, from.getAccountNumber(), to.getAccountNumber());
             to.addTransaction(t);
@@ -43,12 +41,10 @@ public class TransactionService {
             checkLowBalance(from, customer);
 
             customer.notifyUser("Transfer of " + amount + " completed successfully", Notification.NotificationType.INFO);
+            System.out.println("Transfer successful");
         } catch (Exception e) {
             customer.notifyUser("Transfer failed: " + e.getMessage(), Notification.NotificationType.ALERT);
         }
-
-
-        System.out.println("Transfer successful");
     }
 
     // Low Balance alert

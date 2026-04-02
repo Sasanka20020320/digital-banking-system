@@ -2,6 +2,7 @@ package service;
 
 import model.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class SchedulerService {
@@ -18,6 +19,7 @@ public class SchedulerService {
         // Monthly Interest
         if (now - lastInterestApplied >= ONE_MONTH) {
             applyMonthlyInterest(users);
+            generateMonthlyStatement(users);
             lastInterestApplied = now;
             System.out.println("Monthly interest applied.");
         }
@@ -28,7 +30,6 @@ public class SchedulerService {
             checkBillReminders(users);
             lastLoanCheck = now;
         }
-
     }
 
     // Apply interest to savings
@@ -69,6 +70,23 @@ public class SchedulerService {
                     if (bill.isDueSoon()) {
                         c.notifyUser("Bill Payment due soon: " + bill.getBillType(), Notification.NotificationType.WARNING);
                     }
+                }
+            }
+        }
+    }
+
+    // Automatic Monthly Statement Generation
+    public void generateMonthlyStatement(List<User> users) {
+        LocalDate now = LocalDate.now();
+        int month = now.getMonthValue();
+        int year = now.getYear();
+
+        for (User user : users) {
+            if (user instanceof Customer customer) {
+                for (Account acc : customer.getAccounts()) {
+                    String statement = acc.generateMonthlyStatement(month, year);
+                    customer.notifyUser("Your monthly statement for account " + acc.getAccountNumber() +
+                            " is ready.", Notification.NotificationType.INFO);
                 }
             }
         }

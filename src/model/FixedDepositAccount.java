@@ -63,6 +63,8 @@ public class FixedDepositAccount extends Account implements Serializable {
         }
 
         decreaseBalance(amount);
+        addTransaction(new Transaction(amount, TransactionType.WITHDRAW));
+
         System.out.println("Withdraw successful");
     }
 }

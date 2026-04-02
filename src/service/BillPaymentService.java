@@ -29,7 +29,7 @@ public class BillPaymentService {
             customer.payBill(bill);
 
             // Store as a transaction
-            account.addTransaction(new Transaction(amount, TransactionType.BILL_PAYMENT));
+//            account.addTransaction(new Transaction(amount, TransactionType.BILL_PAYMENT));
 
             // Notify user
             customer.notifyUser("Bill paid: " + billType + " amount " + amount, Notification.NotificationType.INFO);

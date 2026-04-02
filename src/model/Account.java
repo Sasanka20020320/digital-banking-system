@@ -3,6 +3,9 @@ package model;
 import exception.InsufficientBalanceException;
 import exception.InvalidAmountException;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.Serializable;
@@ -19,6 +22,9 @@ public class Account implements Serializable {
     // ArrayList to store transactions
     private List<Transaction> transactions;
 
+    // Store monthly statements
+    private List<String> monthlyStatements;
+
     // Parent constructor for all account types
     public Account(int accountNumber, double balance) {
         this.accountNumber = accountNumber;
@@ -26,6 +32,15 @@ public class Account implements Serializable {
 
         // Initialize Transactions list
         transactions = new ArrayList<>();
+        monthlyStatements = new ArrayList<>();
+    }
+
+    // Store monthly statements
+    public void addMonthlyStatements(String statement) {
+        if (monthlyStatements == null) {
+            monthlyStatements = new ArrayList<>();
+        }
+        monthlyStatements.add(statement);
     }
 
     // Getters for private attributes
@@ -38,7 +53,14 @@ public class Account implements Serializable {
     }
 
     public List<Transaction> getTransactions() {
+        if(monthlyStatements == null) {
+            monthlyStatements = new ArrayList<>();
+        }
         return new ArrayList<>(transactions);
+    }
+
+    public List<String> getMonthlyStatements() {
+        return new ArrayList<>(monthlyStatements);
     }
 
     // Setters for attributes
@@ -106,4 +128,69 @@ public class Account implements Serializable {
     public void withdraw(double amount) {
         withdraw(amount, TransactionType.WITHDRAW);
     }
+
+    // Monthly Statement Generation
+    public String generateMonthlyStatement(int month, int year) {
+        if (monthlyStatements == null) {
+            monthlyStatements = new ArrayList<>();
+        }
+
+        // Prevent duplicates
+        for (String stmt : monthlyStatements) {
+            if (stmt.contains("Month?Year: " + month + "/" + year)) {
+                return stmt;
+            }
+        }
+
+        double startingBalance = getStartingBalance(month, year);
+        double endingBalance = getBalance();
+        double totalInterest = calculateInterest(month, year);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("=== Monthly Statement ===\n");
+        sb.append("Account No: ").append(accountNumber).append("\n");
+        sb.append("Month/Year: ").append(month).append("/").append(year).append("\n");
+        sb.append("Starting Balance: ").append(startingBalance).append("\n");
+        sb.append("Ending Balance: ").append(endingBalance).append("\n");
+        sb.append("Interest Earned: ").append(totalInterest).append("\n");
+        sb.append("Transactions:\n");
+
+        for (Transaction t : transactions) {
+            Instant ts = t.getTimestamp();
+
+            // Filter transactions in the requested month/year
+            LocalDate date = ts.atZone(ZoneId.systemDefault()).toLocalDate();
+
+            if (date.getMonthValue() == month && date.getYear() == year) {
+                sb.append(t).append("\n");
+            }
+        }
+
+        String statements = sb.toString();
+
+        addMonthlyStatements(sb.toString());
+
+        return sb.toString();
+    }
+
+    // Calculate interest
+    private double calculateInterest(int month, int year) {
+        // Calculate interest earned in the month
+        double interest = 0;
+        if (this instanceof SavingsAccount) {
+            interest = getBalance() * ((SavingsAccount) this).getInterestRate() / 12;
+        }
+        return interest;
+    }
+
+    // Starting Balance
+    private double getStartingBalance(int month, int year) {
+        return balance;
+    }
+
+    @Override
+    public String toString() {
+        return "Account No: " + accountNumber + ", Balance: " + balance;
+    }
+
 }
