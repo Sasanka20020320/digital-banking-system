@@ -5,8 +5,6 @@ import exception.InvalidAccountException;
 import exception.InvalidAmountException;
 import model.*;
 
-import java.util.List;
-
 public class TransactionService {
     public void transfer(Account from, Account to, double amount, Customer customer) {
         // Validate sender and receiver accounts

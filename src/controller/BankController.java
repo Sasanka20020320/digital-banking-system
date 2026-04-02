@@ -50,6 +50,24 @@ public class BankController {
         return customer.getLoans().size() + 1;
     }
 
+    // Generate Account Number
+    private int generateAccountNumber(List<User> users) {
+        int maxAccNo = 100;
+
+        for (User user : users) {
+            if (user instanceof Customer) {
+                Customer c = (Customer) user;
+
+                for (Account acc : c.getAccounts()) {
+                    if (acc.getAccountNumber() > maxAccNo) {
+                        maxAccNo = acc.getAccountNumber();
+                    }
+                }
+            }
+        }
+        return maxAccNo + 1;
+    }
+
     public void register(List<User> users, Scanner scanner) {
         System.out.println("=== CUSTOMER REGISTRATION ===");
         scanner.nextLine();
@@ -82,7 +100,7 @@ public class BankController {
         Customer newCustomer = new Customer(newId, name, email, password);
 
         // Create a default account
-        int newAccNo = 100 + newId;
+        int newAccNo = generateAccountNumber(users);
         System.out.println("Enter initial deposit amount: ");
         double initBalance = scanner.nextDouble();
         scanner.nextLine();
@@ -96,54 +114,11 @@ public class BankController {
         boolean addMore = true;
 
         while (addMore) {
-            System.out.println("Do you want to create another account? (yes/no): ");
+            System.out.println("Do you want to open an additional account? (yes/no): ");
             String choice = scanner.nextLine().trim().toLowerCase();
 
             if (choice.equals("yes")) {
-                System.out.println("Select account type: ");
-                System.out.println("1. Savings");
-                System.out.println("2. Checking");
-                System.out.println("3. Student");
-                System.out.println("4. Fixed Deposit");
-
-                int type = scanner.nextInt();
-                scanner.nextLine();
-
-                System.out.println("Enter initial deposit: ");
-                double balance = scanner.nextDouble();
-                scanner.nextLine();
-
-                int accNo = 100 + newCustomer.getAccounts().size() + newId;
-                Account newAcc = null;
-
-                switch (type) {
-                    case 1:
-                        newAcc = new SavingsAccount(accNo, balance, 0.05);
-                        break;
-                    case 2:
-                        System.out.println("Enter overdraft limit: ");
-                        double overdraft = scanner.nextDouble();
-                        scanner.nextLine();
-
-                        newAcc = new CheckingAccount(accNo, balance, overdraft);
-                        break;
-                    case 3:
-                        newAcc = new StudentAccount(accNo, balance);
-                        break;
-                    case 4:
-                        double interestRate = 0.2; // 20%
-
-                        System.out.println("Enter months for deposit: ");
-                        int months = scanner.nextInt();
-                        scanner.nextLine();
-
-                        newAcc = new FixedDepositAccount(accNo, balance, interestRate, months);
-                        break;
-                    default:
-                        System.out.println("Invalid account type");
-                }
-                newCustomer.addAccount(newAcc);
-                System.out.println("Account created with Account No: " + accNo);
+                openNewAccount(newCustomer, users, scanner);
             } else {
                 addMore = false;
             }
@@ -203,7 +178,8 @@ public class BankController {
             System.out.println("6. Check Balance");
             System.out.println("7. Pay Bill");
             System.out.println("8. View Transactions");
-            System.out.println("9. Exit");
+            System.out.println("9. Open New Account");
+            System.out.println("10. Exit");
             System.out.println("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -324,8 +300,13 @@ public class BankController {
                     viewTransactions(customer, transAccNo, scanner);
                     break;
 
-                // Exit
+                // Open New Account
                 case 9:
+                    openNewAccount(customer, users, scanner);
+                    break;
+
+                // Exit
+                case 10:
                     running = false;
                     System.out.println("Exiting...");
                     break;
@@ -350,32 +331,6 @@ public class BankController {
             int choice = scanner.nextInt();
 
             switch (choice) {
-                // Approve Loan
-//                case 1:
-//                    if (customer.getLoans().isEmpty()) {
-//                        System.out.println("No loan requests");
-//                        break;
-//                    }
-//
-//                    Loan pendingLoan = customer.getLoans().get(0);
-//                    staff.approveLoan(pendingLoan, customer.getAccounts().get(0), customer, loanService);
-//
-//                    System.out.println("Loan approved by staff");
-//                    break;
-
-                // Reject Loan
-//                case 2:
-//                    if (customer.getLoans().isEmpty()) {
-//                        System.out.println("No loan requests");
-//                        break;
-//                    }
-//
-//                    pendingLoan = customer.getLoans().get(0);
-//                    staff.rejectLoan(pendingLoan, loanService);
-//
-//                    System.out.println("Loan rejected by staff");
-//                    break;
-
                 // Collect all loans from all customer
                 case 1: // Approve Loan
                 case 2: // Reject Loan
@@ -549,6 +504,54 @@ public class BankController {
         } else {
             System.out.println("Account not found");
         }
+    }
+
+    // Open new Account
+    public void openNewAccount(Customer customer, List<User> users, Scanner scanner) {
+        System.out.println("=== OPEN NEW ACCOUNT ===");
+
+        System.out.println("Select account type: ");
+        System.out.println("1. Savings");
+        System.out.println("2. Checking");
+        System.out.println("3. Student");
+        System.out.println("4. Fixed Deposit");
+
+        int type = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.println("Enter initial deposit: ");
+        double balance = scanner.nextDouble();
+        scanner.nextLine();
+
+        int accNo = generateAccountNumber(users);
+        Account newAcc = null;
+
+        switch (type) {
+            case 1:
+                newAcc = new SavingsAccount(accNo, balance, 0.05);
+                break;
+            case 2:
+                System.out.println("Enter overdraft limit: ");
+                double overdraft = scanner.nextDouble();
+                scanner.nextLine();
+                newAcc = new CheckingAccount(accNo, balance, overdraft);
+                break;
+            case 3:
+                newAcc = new StudentAccount(accNo, balance);
+                break;
+            case 4:
+                System.out.println("Enter months for deposit: ");
+                int months = scanner.nextInt();
+                scanner.nextLine();
+                newAcc = new FixedDepositAccount(accNo, balance, 0.2, months);
+                break;
+            default:
+                System.out.println("invalid account type");
+                return;
+        }
+        customer.addAccount(newAcc);
+        customer.notifyUser("New account created: " + accNo);
+        System.out.println("Account created successfully! Account No: " + accNo);
     }
 
     // View Transactions

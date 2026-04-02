@@ -1,13 +1,9 @@
 package main;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import controller.BankController;
-import exception.InsufficientBalanceException;
-import exception.InvalidAccountException;
-import exception.InvalidAmountException;
 import model.*;
 import service.*;
 
