@@ -39,6 +39,7 @@ public class TransactionService {
             to.addTransaction(t);
 
             checkLowBalance(from, customer);
+            fraudService.analyzeTransaction(to, t);
 
             customer.notifyUser("Transfer of " + amount + " completed successfully", Notification.NotificationType.INFO);
             System.out.println("Transfer successful");
@@ -60,6 +61,12 @@ public class TransactionService {
         customer.notifyUser("Deposited " + amount + " to account " + account.getAccountNumber(), Notification.NotificationType.INFO);
 
         checkLowBalance(account, customer);
+
+        // Get last transaction
+        Transaction transaction = account.getTransactions()
+                        .get(account.getTransactions().size() - 1);
+
+        fraudService.analyzeTransaction(account, transaction);
     }
 
     // Notify Customer about Withdrawals
@@ -68,5 +75,13 @@ public class TransactionService {
         customer.notifyUser("Withdrawn " + amount + " from account " + account.getAccountNumber(), Notification.NotificationType.INFO);
 
         checkLowBalance(account, customer);
+
+        // Get last transaction
+        Transaction transaction = account.getTransactions()
+                .get(account.getTransactions().size() - 1);
+
+        fraudService.analyzeTransaction(account, transaction);
     }
+
+    private FraudDetectionService fraudService = new FraudDetectionService();
 }

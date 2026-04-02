@@ -15,6 +15,8 @@ public class Transaction implements Serializable {
     private Integer fromAccount;
     private Integer toAccount;
 
+    private boolean suspicious;
+
     /*
     Constructor Overloading
         - 2-arg constructor --> simple transactions
@@ -59,6 +61,15 @@ public class Transaction implements Serializable {
 
     public Instant getTimestamp() {
         return timestamp;
+    }
+
+    public boolean isSuspicious() {
+        return suspicious;
+    }
+
+    // Setter
+    public void setSuspicious(boolean suspicious) {
+        this.suspicious = suspicious;
     }
 
     @Override

@@ -369,7 +369,8 @@ public class BankController {
             System.out.println("\n=== STAFF MENU ===");
             System.out.println("1. Approve Loan");
             System.out.println("2. Reject Loan");
-            System.out.println("3. Exit");
+            System.out.println("3. View Suspicious Transactions");
+            System.out.println("4. Exit");
             System.out.println("Choose option: ");
 
             int choice = scanner.nextInt();
@@ -436,8 +437,14 @@ public class BankController {
 
                     break;
 
-                // Exit
+                // View Suspicious Transactions
                 case 3:
+                    FraudDetectionService fraudService = new FraudDetectionService();
+                    fraudService.detectSuspiciousActivities(users);
+                    break;
+
+                // Exit
+                case 4:
                     running = false;
                     System.out.println("Exiting...");
                     break;
