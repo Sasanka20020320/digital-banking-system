@@ -1,0 +1,37 @@
+
+
+Version:	3.50
+CmdLine:	D:\New folder (2)\OOP Project\Banking App\RajarataBank.exe --l4j-debug
+JNI:		No
+WOW64:		Yes
+Working dir:	D:\New folder (2)\OOP Project\Banking App\.
+Requires JDK:	No
+Requires 64-Bit: No
+Java min ver:	1.017.000
+Java max ver:	
+Substitute:	JAVA_HOME = 
+Substitute:	PATH = C:\Program Files\Common Files\Oracle\Java\javapath;C:\Python314\Scripts\;C:\Python314\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\nodejs\;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\mingw64\bin;C:\Users\ASUS\AppData\Local\Microsoft\WindowsApps;C:\Users\ASUS\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\ASUS\AppData\Roaming\npm;C:\Program Files\JetBrains\IntelliJ IDEA 2025.3.1\bin;C:\MinGW\bin;;C:\Program Files\Java\jdk-25\bin
+JRE paths:	;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Python314\Scripts\;C:\Python314\;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\Program Files\nodejs\;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\mingw64\bin;C:\Users\ASUS\AppData\Local\Microsoft\WindowsApps;C:\Users\ASUS\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\ASUS\AppData\Roaming\npm;C:\Program Files\JetBrains\IntelliJ IDEA 2025.3.1\bin;C:\MinGW\bin;;C:\Program Files\Java\jdk-25\bin
+Check launcher:	C:\Program Files\Common Files\Oracle\Java\javapath\bin\javaw.exe (not found)
+Check launcher:	C:\Python314\Scripts\bin\javaw.exe (not found)
+Check launcher:	C:\Python314\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\system32\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\System32\Wbem\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\System32\WindowsPowerShell\v1.0\bin\javaw.exe (not found)
+Check launcher:	C:\Windows\System32\OpenSSH\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\nodejs\bin\javaw.exe (not found)
+Check launcher:	C:\ProgramData\chocolatey\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Git\cmd\bin\javaw.exe (not found)
+Check launcher:	C:\mingw64\bin\javaw.exe (not found)
+Check launcher:	C:\Users\ASUS\AppData\Local\Microsoft\WindowsApps\bin\javaw.exe (not found)
+Check launcher:	C:\Users\ASUS\AppData\Local\Programs\Microsoft VS Code\bin\javaw.exe (not found)
+Check launcher:	C:\Users\ASUS\AppData\Roaming\npm\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\JetBrains\IntelliJ IDEA 2025.3.1\bin\javaw.exe (not found)
+Check launcher:	C:\MinGW\bin\javaw.exe (not found)
+Check launcher:	C:\Program Files\Java\jdk-25\bin\javaw.exe (OK)
+Version string: 1.025.000_001 / 64-Bit (OK)
+Launcher:	C:\Program Files\Java\jdk-25\bin\javaw.exe
+Launcher args:	-jar "D:\New folder (2)\OOP Project\Banking App\RajarataBank.exe"
+Args length:	65/32768 chars
+Exit code:	0

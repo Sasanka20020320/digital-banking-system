@@ -88,3 +88,28 @@ public class Customer extends User implements Serializable {
         notifications.add(notification);
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. INHERITANCE:
+    - Customer extends User, reusing common attributes (id, name, email, password).
+
+ 2. COMPOSITION:
+    - Customer "has-a" relationship with:
+        Accounts, Loans, Notifications, BillPayments.
+    - This models real-world banking relationships.
+
+ 3. ENCAPSULATION:
+    - Internal lists are private and exposed via safe copies.
+
+ 4. SINGLE RESPONSIBILITY:
+    - Responsible only for managing customer-related data.
+    - Business logic is handled in service layer.
+
+ 5. ABSTRACTION:
+    - Methods like applyLoan(), notifyUser() hide implementation details.
+
+ 6. EXTENSIBILITY:
+    - Additional features (e.g., credit score, KYC) can be added easily.
+*/

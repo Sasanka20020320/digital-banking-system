@@ -55,3 +55,22 @@ public class User implements Serializable {
         return "User ID: " + userId + ", Name: " + name + ", Email " + email;
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. BASE CLASS:
+    - Parent class for Customer, Staff, and Admin.
+
+ 2. INHERITANCE:
+    - Promotes code reuse across user types.
+
+ 3. ENCAPSULATION:
+    - User data is private with controlled access.
+
+ 4. ABSTRACTION:
+    - Represents general system user.
+
+ 5. EXTENSIBILITY:
+    - New user roles can be added easily.
+*/

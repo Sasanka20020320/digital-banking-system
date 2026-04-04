@@ -12,3 +12,19 @@ public class Admin extends User implements Serializable {
         super(id, name, email,password);
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. INHERITANCE:
+    - Extends User.
+
+ 2. ROLE-BASED DESIGN:
+    - Admin has higher privileges (system-wide operations).
+
+ 3. SINGLE RESPONSIBILITY:
+    - Admin-specific actions handled in controller layer.
+
+ 4. EXTENSIBILITY:
+    - Can be extended for audit logs, compliance, etc.
+*/

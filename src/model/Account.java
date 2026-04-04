@@ -56,8 +56,8 @@ public class Account implements Serializable {
     }
 
     public List<Transaction> getTransactions() {
-        if(monthlyStatements == null) {
-            monthlyStatements = new ArrayList<>();
+        if(transactions == null) {
+            transactions = new ArrayList<>();
         }
         return new ArrayList<>(transactions);
     }
@@ -114,7 +114,6 @@ public class Account implements Serializable {
             throw new InvalidAmountException("Deposit amount must be positive");
         }
         increaseBalance(amount);
-        System.out.println("Deposit Successful");
 
         // Store the transaction
         Transaction transaction = new Transaction(amount, TransactionType.DEPOSIT);
@@ -132,11 +131,6 @@ public class Account implements Serializable {
         }
 
         decreaseBalance(amount);
-        System.out.println("Withdraw successful");
-
-        if (balance <= minimumBalance) {
-            System.out.println("Warning: Low Balance!");
-        }
 
         // Store the transaction
         Transaction transaction = new Transaction(amount, type);
@@ -204,12 +198,56 @@ public class Account implements Serializable {
 
     // Starting Balance
     private double getStartingBalance(int month, int year) {
-        return balance;
+        double startingBalance = balance;
+
+        for (Transaction t : transactions) {
+            LocalDate date = t.getTimestamp().atZone(ZoneId.systemDefault()).toLocalDate();
+            if (date.getYear() > year || (date.getYear() == year && date.getMonthValue() > month)) {
+                startingBalance -= t.getAmount();
+            }
+        }
+        return startingBalance;
     }
 
     @Override
     public String toString() {
         return "Account No: " + accountNumber + ", Balance: " + balance;
     }
-
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. ABSTRACTION:
+    - The Account class provides common banking operations such as deposit(), withdraw(),
+      and transaction handling without exposing internal implementation details.
+    - Users interact with high-level methods instead of directly modifying balance.
+
+ 2. ENCAPSULATION:
+    - Fields like balance, transactions, and accountNumber are private.
+    - Controlled access is provided via getters and protected setters.
+    - This ensures data integrity (e.g., balance cannot be modified directly).
+
+ 3. INHERITANCE:
+    - Account acts as a base class for specialized accounts:
+        SavingsAccount, CheckingAccount, StudentAccount, FixedDepositAccount.
+    - Common functionality is reused, reducing code duplication.
+
+ 4. POLYMORPHISM:
+    - Methods like withdraw() are overridden in subclasses (e.g., CheckingAccount, FixedDepositAccount)
+      to provide different behaviors such as overdraft or penalties.
+
+ 5. SINGLE RESPONSIBILITY PRINCIPLE:
+    - This class handles only account-related operations (balance, transactions, statements),
+      while services (TransactionService, FraudDetectionService) handle business logic.
+
+ 6. DATA SAFETY:
+    - Returns copies of lists (new ArrayList<>(transactions)) to prevent external modification.
+
+ 7. EXTENSIBILITY:
+    - New account types can be added easily without modifying existing code.
+
+ 8. ADDITIONAL DESIGN:
+    - frozen and closed flags allow admin control without deleting accounts.
+    - monthlyStatements supports report generation without recalculating repeatedly.
+*/

@@ -36,8 +36,28 @@ public class Notification implements Serializable {
         return timestamp;
     }
 
+    public NotificationType getType() {
+        return type;
+    }
+
     @Override
     public String toString() {
         return "[" + timestamp + "] [" + type + "]" + message;
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. ENCAPSULATION:
+    - Notification details are private.
+
+ 2. ENUM USAGE:
+    - NotificationType ensures only valid types (INFO, WARNING, ALERT).
+
+ 3. SINGLE RESPONSIBILITY:
+    - Handles user notifications only.
+
+ 4. REAL-WORLD MODELING:
+    - Includes timestamp for tracking events.
+*/

@@ -22,3 +22,40 @@ public class FileHandler {
         return null;
     }
 }
+
+/*
+==================== DESIGN DECISIONS - FILE HANDLER ====================
+
+1. UTILITY CLASS PURPOSE
+   - FileHandler is a reusable utility class for handling file operations.
+   - Provides generic methods for reading and writing objects.
+
+2. SERIALIZATION USAGE
+   - Uses Java Object Serialization (ObjectOutputStream / ObjectInputStream)
+   - Allows storing complete object graphs:
+        Users → Accounts → Transactions
+
+3. GENERIC DESIGN
+   - Methods accept Object type:
+        writeObject(Object obj, String filePath)
+        readObject(String filePath)
+   - Makes the class reusable for any serializable object.
+
+4. ABSTRACTION
+   - Hides low-level file handling details from service layer.
+   - Service layer (FileService) interacts with this class instead of raw I/O.
+
+5. EXCEPTION HANDLING
+   - Uses try-with-resources to ensure automatic resource closing.
+   - Catches IO and ClassNotFound exceptions to prevent crashes.
+
+6. SEPARATION OF CONCERNS
+   - File handling logic is isolated from business logic.
+   - Keeps service and controller layers clean.
+
+7. DESIGN TRADE-OFF
+   - Returns Object → requires casting in service layer.
+   - Simpler approach suitable for small-scale systems.
+
+========================================================================
+*/

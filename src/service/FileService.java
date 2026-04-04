@@ -7,16 +7,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * FileService handles data persistence using Java Serialization.
- *
- * DESIGN DECISION:
- * We use serialization because:
- * - It allows storing complete object structures (Users --> Accounts --> Transactions)
- * - It is simple and suitable for small-scale applications like this project
- * - It fulfills the assignment requirements of file handling
- */
-
 public class FileService {
     // File path to store user data
     private static final String FILE_PATH = "bank_data.ser";
@@ -47,3 +37,29 @@ public class FileService {
         return new ArrayList<>();
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. SEPARATION OF CONCERNS:
+    - Handles only file persistence logic.
+
+ 2. SINGLE RESPONSIBILITY:
+    - Responsible for saving and loading user data.
+
+ 3. ABSTRACTION:
+    - Hides serialization logic from the rest of the system.
+
+ 4. LOOSE COUPLING:
+    - Uses FileHandler utility instead of directly handling file streams.
+
+ 5. DATA PERSISTENCE STRATEGY:
+    - Uses Java Serialization to store complete object graphs
+      (Users → Accounts → Transactions).
+
+ 6. EXTENSIBILITY:
+    - Can be replaced with database (JDBC, MySQL) without affecting other layers.
+
+ NOTE:
+    - Suitable for small-scale systems and academic projects.
+*/

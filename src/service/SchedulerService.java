@@ -92,3 +92,35 @@ public class SchedulerService {
         }
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. AUTOMATION (SIMULATION OF REAL SYSTEMS):
+    - Simulates background jobs like:
+        - Monthly interest calculation
+        - Loan reminders
+        - Bill reminders
+        - Statement generation
+
+ 2. SINGLE RESPONSIBILITY:
+    - Handles scheduled/periodic tasks only.
+
+ 3. SEPARATION OF CONCERNS:
+    - Keeps time-based logic separate from business logic.
+
+ 4. TIME-BASED EXECUTION:
+    - Uses timestamps to simulate daily and monthly operations.
+
+ 5. LOOSE COUPLING:
+    - Delegates loan checking to LoanService.
+
+ 6. REAL-WORLD MODELING:
+    - Mimics cron jobs or scheduled banking operations.
+
+ 7. EXTENSIBILITY:
+    - Can be extended for:
+        - SMS/email notifications
+        - automatic deductions
+        - system audits
+*/

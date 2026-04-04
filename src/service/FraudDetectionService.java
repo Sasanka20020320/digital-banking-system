@@ -48,3 +48,30 @@ public class FraudDetectionService {
         }
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. SINGLE RESPONSIBILITY:
+    - Handles fraud detection logic only.
+
+ 2. SEPARATION OF CONCERNS:
+    - Fraud analysis is separated from transaction processing.
+
+ 3. ABSTRACTION:
+    - Provides high-level method analyzeTransaction() without exposing detection logic.
+
+ 4. RULE-BASED DETECTION:
+    - Detects suspicious activity using:
+        - Large transaction threshold
+        - High-frequency transactions
+
+ 5. LOOSE COUPLING:
+    - Works with Account and Transaction without modifying their structure.
+
+ 6. EXTENSIBILITY:
+    - Can be upgraded to ML-based fraud detection in future.
+
+ 7. REAL-WORLD SIMULATION:
+    - Mimics basic banking fraud detection systems.
+*/

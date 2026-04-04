@@ -91,3 +91,25 @@ public class Loan implements Serializable {
                         (Math.pow(1 + monthlyRate, n) - 1);
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. ENCAPSULATION:
+    - Loan data is private and accessed via getters/setters.
+
+ 2. ABSTRACTION:
+    - EMI calculation is hidden inside calculateEMI().
+
+ 3. SINGLE RESPONSIBILITY:
+    - Handles only loan-related data and calculations.
+
+ 4. STATE MANAGEMENT:
+    - LoanStatus enum represents lifecycle (PENDING, APPROVED, etc.).
+
+ 5. REAL-WORLD MODELING:
+    - Includes interest, duration, installments, and due dates.
+
+ 6. EXTENSIBILITY:
+    - Can be extended to support penalties, early repayment, etc.
+*/

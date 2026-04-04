@@ -67,6 +67,28 @@ public class Transaction implements Serializable {
         return suspicious;
     }
 
+    public Integer getFromAccount() {
+        return fromAccount;
+    }
+
+    public Integer getToAccount() {
+        return toAccount;
+    }
+
+    // Description for GUI
+    public String getDescription() {
+        if (type == TransactionType.TRANSFER) {
+            return "From: " + fromAccount + " → To: " + toAccount;
+        } else if (type == TransactionType.DEPOSIT) {
+            return "Deposit of " + amount;
+        } else if (type == TransactionType.WITHDRAW) {
+            return "Withdrawal of " + amount;
+        } else if (type == TransactionType.BILL_PAYMENT) {
+            return "Bill Payment of " + amount;
+        }
+        return "Transaction of " + amount;
+    }
+
     // Setter
     public void setSuspicious(boolean suspicious) {
         this.suspicious = suspicious;
@@ -88,3 +110,27 @@ public class Transaction implements Serializable {
         return base;
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. ENCAPSULATION:
+    - Transaction details are private and accessed via getters.
+
+ 2. IMMUTABILITY (PARTIAL):
+    - Once created, most transaction data does not change.
+
+ 3. METHOD OVERLOADING:
+    - Two constructors:
+        - Simple transactions (deposit, withdraw)
+        - Transfer transactions (with from/to accounts)
+
+ 4. SINGLE RESPONSIBILITY:
+    - Represents a single financial transaction only.
+
+ 5. EXTENSIBILITY:
+    - Supports fraud detection via 'suspicious' flag.
+
+ 6. REAL-WORLD MODELING:
+    - Includes timestamp and type for accurate tracking.
+*/

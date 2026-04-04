@@ -64,3 +64,19 @@ public class BillPayment implements Serializable {
                 ", Time: " + timestamp;
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. ENCAPSULATION:
+    - Bill data is private and accessed via getters.
+
+ 2. SINGLE RESPONSIBILITY:
+    - Represents a bill payment only.
+
+ 3. REAL-WORLD MODELING:
+    - Includes due date and urgency detection (isDueSoon).
+
+ 4. EXTENSIBILITY:
+    - Can support reminders or penalties later.
+*/

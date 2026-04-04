@@ -17,10 +17,17 @@ public class LoanService {
     }
 
     // Installment payment
-    public void payInstallment(Loan loan, Account account, Customer customer) {
+    public void payInstallment(Loan loan, Account account, Customer customer, double amount) {
         if (loan.getStatus() != LoanStatus.APPROVED) {
-            System.out.println("Loan not active");
-            return;
+            throw new IllegalStateException("Cannot pay. Loan not approved yet.");
+        }
+
+        if (account.isClosed()) {
+            throw new IllegalStateException("Cannot pay from a closed account.");
+        }
+
+        if (account.isFrozen()) {
+            throw new IllegalStateException("Cannot pay from a frozen account.");
         }
 
         double installment = loan.getMonthlyInstallment();
@@ -41,6 +48,9 @@ public class LoanService {
         account.decreaseBalance(installment);
         loan.setRemainingBalance(loan.getRemainingBalance() - installment);
         loan.setMonthsPaid(loan.getMonthsPaid() + 1);
+
+        Transaction transaction = new Transaction(amount, TransactionType.LOAN_INSTALLMENT);
+        account.addTransaction(transaction);
 
         System.out.println("Loan Payment Done. Amount:" + installment);
 
@@ -82,3 +92,32 @@ public class LoanService {
         }
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. SINGLE RESPONSIBILITY:
+    - Handles all loan-related operations (approval, rejection, repayment).
+
+ 2. SEPARATION OF CONCERNS:
+    - Business logic is separated from controller and model.
+
+ 3. ABSTRACTION:
+    - Complex operations like EMI handling and penalties are hidden internally.
+
+ 4. REAL-WORLD MODELING:
+    - Includes:
+        - Loan approval flow
+        - Installments
+        - Late payment penalties
+        - Due date tracking
+
+ 5. ENCAPSULATION:
+    - Uses getters/setters instead of direct field access.
+
+ 6. EXTENSIBILITY:
+    - Can support different loan types, interest models, and penalties.
+
+ 7. EVENT-BASED NOTIFICATIONS:
+    - Notifies users about approvals, payments, and completion.
+*/

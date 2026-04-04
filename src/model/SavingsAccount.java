@@ -21,6 +21,25 @@ public class SavingsAccount extends Account implements Serializable {
 
     public void addInterest() {
         double interest = getBalance() * interestRate;
-        deposit(interest);
+
+        if (interest > 0) {
+            setBalance(getBalance() + interest);
+        }
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. INHERITANCE:
+    - Extends Account and reuses core functionality.
+
+ 2. SPECIALIZATION:
+    - Adds interestRate and interest calculation.
+
+ 3. POLYMORPHISM:
+    - Can override behaviors if needed.
+
+ 4. SINGLE RESPONSIBILITY:
+    - Focused only on savings account behavior.
+*/

@@ -19,3 +19,19 @@ public class Staff extends User implements Serializable {
         loanService.rejectLoan(loan);
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. INHERITANCE:
+    - Extends User.
+
+ 2. ABSTRACTION:
+    - Staff interacts with LoanService instead of handling logic directly.
+
+ 3. SINGLE RESPONSIBILITY:
+    - Responsible for approving/rejecting loans.
+
+ 4. LOOSE COUPLING:
+    - Delegates operations to service layer.
+*/

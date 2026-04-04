@@ -41,3 +41,28 @@ public class BillPaymentService {
         }
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. SEPARATION OF CONCERNS:
+    - Handles business logic of bill payments instead of placing it in controller.
+
+ 2. SINGLE RESPONSIBILITY:
+    - Responsible only for bill-related operations.
+
+ 3. ENCAPSULATION:
+    - Uses Account and Customer methods instead of modifying data directly.
+
+ 4. EXCEPTION HANDLING:
+    - Validates account and amount before processing.
+
+ 5. REAL-WORLD MODELING:
+    - Simulates bill deduction, record creation, and notification.
+
+ 6. LOOSE COUPLING:
+    - Depends on model classes but does not control their internal implementation.
+
+ 7. EXTENSIBILITY:
+    - Can be extended for bill categories, auto-pay, or external APIs.
+*/

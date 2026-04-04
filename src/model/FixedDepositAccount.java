@@ -68,3 +68,22 @@ public class FixedDepositAccount extends Account implements Serializable {
         System.out.println("Withdraw successful");
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. INHERITANCE:
+    - Extends Account.
+
+ 2. POLYMORPHISM:
+    - Overrides withdraw() to apply penalties for early withdrawal.
+
+ 3. ABSTRACTION:
+    - Maturity logic hidden inside isMatured() and applyMaturityInterest().
+
+ 4. STATE CONTROL:
+    - interestApplied prevents duplicate interest addition.
+
+ 5. REAL-WORLD MODELING:
+    - Simulates fixed deposit behavior with duration and maturity.
+*/

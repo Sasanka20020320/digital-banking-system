@@ -41,3 +41,19 @@ public class CheckingAccount extends Account implements Serializable {
         addTransaction(new Transaction(amount, TransactionType.WITHDRAW));
     }
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. INHERITANCE:
+    - Extends Account.
+
+ 2. POLYMORPHISM:
+    - Overrides withdraw() to support overdraft behavior.
+
+ 3. ENCAPSULATION:
+    - Overdraft limit is controlled internally.
+
+ 4. REAL-WORLD MODELING:
+    - Allows negative balance within overdraft limit.
+*/

@@ -35,11 +35,15 @@ public class TransactionService {
             to.increaseBalance(amount);
 
             // Record as transfer transactions
-            Transaction t = new Transaction(amount, TransactionType.TRANSFER, from.getAccountNumber(), to.getAccountNumber());
-            to.addTransaction(t);
+            Transaction tSender = new Transaction(amount, TransactionType.TRANSFER, from.getAccountNumber(), to.getAccountNumber());
+            Transaction tReceiver = new Transaction(amount, TransactionType.TRANSFER, from.getAccountNumber(), to.getAccountNumber());
+
+            from.addTransaction(tSender);
+            to.addTransaction(tReceiver);
 
             checkLowBalance(from, customer);
-            fraudService.analyzeTransaction(to, t);
+            fraudService.analyzeTransaction(from, tSender);
+            fraudService.analyzeTransaction(to, tReceiver);
 
             customer.notifyUser("Transfer of " + amount + " completed successfully", Notification.NotificationType.INFO);
             System.out.println("Transfer successful");
@@ -85,3 +89,41 @@ public class TransactionService {
 
     private FraudDetectionService fraudService = new FraudDetectionService();
 }
+
+/*
+ DESIGN DECISIONS & OOP PRINCIPLES:
+
+ 1. SINGLE RESPONSIBILITY:
+    - Handles all transaction-related operations:
+        deposit, withdraw, transfer.
+
+ 2. SEPARATION OF CONCERNS:
+    - Business logic is separated from Account and Controller.
+
+ 3. ABSTRACTION:
+    - Controller calls simple methods without knowing internal validations.
+
+ 4. VALIDATION & ERROR HANDLING:
+    - Ensures:
+        - valid accounts
+        - positive amounts
+        - sufficient balance
+
+ 5. COMPOSITION:
+    - Uses FraudDetectionService to analyze transactions.
+
+ 6. LOOSE COUPLING:
+    - Works with Account and Customer without modifying their structure.
+
+ 7. REAL-WORLD MODELING:
+    - Includes:
+        - transfer validation
+        - low balance alerts
+        - fraud detection integration
+
+ 8. EXTENSIBILITY:
+    - Can be extended for:
+        - transaction fees
+        - currency conversion
+        - external payment gateways
+*/
