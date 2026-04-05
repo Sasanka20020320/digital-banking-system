@@ -181,12 +181,12 @@ public class BankGUI extends JFrame {
             String email = emailField.getText();
             String password = new String(passwordField.getPassword());
 
-            int newId = users.stream().mapToInt(User::getUserId).max().orElse(0) + 1;
+            int newId = controller.generateAccountNumber(users);
 
             Customer newCustomer = new Customer(newId, name, email, password);
 
             // Default account
-            Account acc = new SavingsAccount(100 + newId, 0, 0.05);
+            Account acc = new SavingsAccount(newId, 0, 0.05);
             newCustomer.addAccount(acc);
 
             users.add(newCustomer);
